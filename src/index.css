@@ -1,0 +1,167 @@
+@import url("https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;500;600;700;800&display=swap");
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+*,
+*:before,
+*:after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-size: 99%;
+}
+
+:root {
+  --primary: transparent;
+  --secondary: #4d4d4d;
+}
+
+html,
+body {
+  background-color: #000000;
+  color: #ffffff;
+  font-family: "Nunito Sans", sans-serif, monospace;
+  font-weight: 400;
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--secondary) var(--primary);
+}
+
+/* Chrome, Edge, and Safari  */
+*::-webkit-scrollbar {
+  width: 8px;
+}
+
+*::-webkit-scrollbar-track {
+  background: var(--primary);
+  border-radius: 5px;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: var(--secondary);
+  border-radius: 14px;
+}
+
+input[type="range"] {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  -ms-touch-action: none;
+  -webkit-appearance: none;
+  -moz-appeareance: none;
+  appearance: none;
+  user-select: none;
+  touch-action: none;
+  position: absolute;
+  cursor: pointer;
+  /* background-color: transparent; */
+  /* background: linear-gradient( */
+  /*   to right, */
+  /*   #1ed760 0%, */
+  /*   #1ed760 28%, */
+  /*   #fff 28%, */
+  /*   #fff 100% */
+  /* ); */
+  width: 100%;
+  height: 5px;
+  border-radius: 15px;
+  outline: none;
+  border: none;
+}
+
+/* FF*/
+
+input[type="range"]::-moz-range-progress {
+  background-color: white;
+  border: none;
+  outline: none;
+  height: 5px;
+  border-radius: 15px;
+}
+input[type="range"]::-moz-range-track {
+  background-color: #282828;
+  border: none;
+  height: 5px;
+  border-radius: 15px;
+  outline: none;
+  display: flex;
+  align-items: center;
+  justify-items: center;
+}
+
+input[type="range"]::-moz-range-thumb {
+  appearance: none;
+  width: 15px;
+  height: 15px;
+  background: white;
+  cursor: pointer;
+  border-radius: 100%;
+  outline: none;
+  border: none;
+  visibility: hidden;
+}
+
+#playbar:hover input[type="range"]::-moz-range-thumb {
+  visibility: visible;
+}
+#playbar:hover input[type="range"]::-moz-range-progress {
+  background: #1ed760;
+}
+
+/* WebKit*/
+/* input[type="range"]::-webkit-slider-runnable-track { */
+/*   -webkit-appearance: none; */
+/*   background-color: #282828; */
+/*   border: none; */
+/*   height: 5px; */
+/*   border-radius: 5px; */
+/*   outline: none; */
+/*   display: flex; */
+/*   align-items: center; */
+/* } */
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 15px;
+  height: 15px;
+  background: white;
+  cursor: pointer;
+  border-radius: 100%;
+  border: none;
+  outline: none;
+}
+
+#wavebar {
+  d: path(
+    "M3.99902 14H5.99902V0H3.99902V14ZM-0.000976562 14H1.9902V4H-0.000976562V14ZM12 7V14H14V7H12ZM8.00002 14H10V10H8.00002V14Z"
+  );
+  animation: wavebar 500ms alternate infinite;
+}
+
+@keyframes wavebar {
+  0% {
+    d: path(
+      "M3.99902 14H5.99902V0H3.99902V10ZM-0.000976562 14H1.9902V4H-0.000976562V14ZM12 7V14H14V7H12ZM8.00002 14H10V10H8.00002V14Z"
+    );
+  }
+  25% {
+    d: path(
+      "M3.99902 14H5.99902V0H3.99902V14ZM-0.000976562 14H1.9902V4H-0.000976562V14ZM12 7V14H14V5H12ZM8.00002 14H10V8H8.00002V14Z"
+    );
+  }
+  50% {
+    d: path(
+      "M3.99902 14H5.99902V5H3.99902V14ZM-0.000976562 14H1.9902V0H-0.000976562V6ZM12 7V14H14V4H12ZM8.00002 14H10V7H8.00002V10Z"
+    );
+  }
+  100% {
+    d: path(
+      "M3.99902 14H5.99902V9H3.99902V10ZM-0.000976562 14H1.9902V2H-0.000976562V11ZM12 7V14H14V2H12ZM8.00002 14H10V5H8.00002V2Z"
+    );
+  }
+}
