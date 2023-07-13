@@ -1,11 +1,17 @@
 import { useEffect, useRef, useState } from "react";
+import { CurrentlyPlaying, Episode, Track } from "../../types/spotify";
 
-function PlayerTile({ data }) {
+function PlayerTile({
+    data,
+}: {
+    data: CurrentlyPlaying<Track | Episode> | undefined;
+}) {
     const [marqueeTrigger, setMarqueeTrigger] = useState<boolean>(false);
     const songNameRef = useRef<HTMLParagraphElement | null>(null);
 
     useEffect(() => {
-        songNameRef?.current?.getBoundingClientRect()?.width! > 150
+        songNameRef.current !== null &&
+            songNameRef?.current?.getBoundingClientRect()?.width > 150
             ? setMarqueeTrigger(true)
             : setMarqueeTrigger(false);
     }, [data?.item?.id]);
@@ -40,7 +46,7 @@ function PlayerTile({ data }) {
 
                 <p className="line-clamp-1">
                     {data?.item?.artists.map((artist, i) => (
-                        <span className="hover:text-red-200 text-gray-400">
+                        <span className="hover:text-red-200 text-gray-400" key={artist?.id}>
                             {data?.item?.artists.length === i + 1
                                 ? artist.name
                                 : artist.name.concat(", ")}

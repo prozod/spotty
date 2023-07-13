@@ -34,16 +34,16 @@ function Header() {
     });
 
     return (
-        <nav className="w-full sticky top-0 z-50 flex justify-between gap-4 p-4 pb-10 bg-gradient-to-t from-transparent to-black">
-            <div className="flex gap-2">
+        <nav className="w-full sticky top-0 z-50 flex justify-between gap-4 p-4 pb-10 bg-gradient-to-t from-transparent to-black items-center">
+            <div className="flex gap-2 items-center">
                 <BsChevronLeft
-                    size={36}
-                    className="active:scale-95 flex items-center justify-center p-2 text-white rounded-full cursor-pointer bg-black/60 border-[0.5px] border-white/20"
+                    size={37}
+                    className="active:scale-95 active:border-spotify flex items-center justify-center p-2 text-white rounded-full cursor-pointer bg-black/60 border-[0.5px] border-white/20"
                     onClick={() => navigate(-1)}
                 />
                 <BsChevronRight
-                    className="active:scale-95 flex items-center justify-center p-2 text-white rounded-full cursor-pointer bg-black/60 border-[0.5px] border-white/20"
-                    size={36}
+                    className="active:scale-95 active:border-spotify flex items-center justify-center p-2 text-white rounded-full cursor-pointer bg-black/60 border-[0.5px] border-white/20"
+                    size={37}
                     onClick={() => navigate(1)}
                 />
 
@@ -59,9 +59,9 @@ function Header() {
                             >
                                 <path
                                     stroke="currentColor"
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    stroke-width="2"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth="2"
                                     d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
                                 />
                             </svg>
@@ -69,28 +69,24 @@ function Header() {
                         <input
                             type="search"
                             id="search"
-                            className="flex items-center w-full px-4 py-3 pl-10 text-xs font-medium border border-grack-700 rounded-lg bg-grack-900 focus:ring-spotify focus:border-spotify placeholder-gray-500 text-white outline-none focus:outline-spotify/20"
+                            className="flex items-center w-full px-4 py-3 pl-10 text-xs font-medium border border-grack-700 rounded-full bg-black/80 focus:ring-spotify focus:border-spotify placeholder-gray-500 text-white outline-none focus:outline-spotify/30"
                             placeholder="Search"
                             required
                         />
                     </div>
                 </form>
             </div>
-            <div className="flex gap-2">
+            <div className="flex gap-4 items-center">
                 <a
                     href="https://www.spotify.com/download"
                     target="_blank"
                     rel="noreferrer"
-                    className="flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-full bg-black/50 hover:scale-105"
+                    className="flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-full bg-black/50 active:scale-95"
                 >
                     <BsArrowDownCircle size={20} />
                     Install App
                 </a>
-                <Menu
-                    shadow="md"
-                    width={200}
-                    transitionProps={{ transition: "rotate-right", duration: 150 }}
-                >
+                <Menu shadow="md" width={200} offset={10}>
                     <Menu.Target>
                         <Avatar
                             src={data?.images[0].url}
@@ -98,12 +94,12 @@ function Header() {
                             color="darkgreen"
                             size="md"
                             radius="xl"
-                            className="active:scale-95 cursor-pointer"
+                            className="active:scale-95 active:border-spotify border-[1px] border-solid border-transparent cursor-pointer"
                         >
                             {data?.display_name.substring(0, 2).toUpperCase()}
                         </Avatar>
                     </Menu.Target>
-                    <Menu.Dropdown className="border-none bg-grack-700">
+                    <Menu.Dropdown className="bg-grack-800 border-[1px] border-solid border-grack-700">
                         <Menu.Item
                             rightSection={<LuExternalLink />}
                             className="text-white hover:bg-grack-600"

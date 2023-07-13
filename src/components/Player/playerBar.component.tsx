@@ -5,7 +5,7 @@ import { FaPauseCircle, FaPlayCircle } from "react-icons/fa";
 import { IoShuffleOutline } from "react-icons/io5";
 import { MdSkipNext, MdSkipPrevious } from "react-icons/md";
 import { shallow } from "zustand/shallow";
-import { toggleShuffle } from "../../services/user.service";
+import { toggleShuffle } from "../../services/playback.service";
 import usePlaybackStore from "../../store/playback.store";
 import millisToMinutesAndSeconds from "../../utils/msConversion";
 
@@ -29,7 +29,6 @@ function PlayerBar({ playback }) {
   const toggShuffle = useMutation({
     mutationFn: (state) => toggleShuffle({ state: state }),
   });
-  console.log(pb);
 
   return (
     <section className="flex flex-col items-center flex-1 gap-2 w-96 justify-self-center grow">
@@ -39,12 +38,13 @@ function PlayerBar({ playback }) {
           onClick={() =>
             toggShuffle.mutate(pb?.shuffle === true ? "false" : "true")
           }
+          className={pb?.shuffle === true ? "text-spotify" : "text-white"}
         />
         <MdSkipPrevious size={28} onClick={() => player.previousTrack()} />
-        {pb?.paused ? (
-          <FaPlayCircle size={28} onClick={() => player.togglePlay()} />
-        ) : (
+        {playback?.is_playing ? (
           <FaPauseCircle size={28} onClick={() => player.togglePlay()} />
+        ) : (
+          <FaPlayCircle size={28} onClick={() => player.togglePlay()} />
         )}
         <MdSkipNext size={28} onClick={() => player.nextTrack()} />
         <BiRepeat size={22} className="rotate-180" />
@@ -63,7 +63,7 @@ function PlayerBar({ playback }) {
             className="transition-all playbar"
             type="range"
             min={0}
-            max={Number(duration_ms)}
+            max={duration_ms}
             step="0.001"
             value={sliderPos.toFixed(1)}
             onMouseEnter={() => setHovered(true)}
@@ -81,7 +81,7 @@ function PlayerBar({ playback }) {
         </div>
         <span className=" w-[35px] opacity-60">
           {playback?.item !== undefined
-            ? millisToMinutesAndSeconds(pb?.duration!)
+            ? millisToMinutesAndSeconds(playback?.item?.duration_ms!)
             : "-:--"}
         </span>
       </div>

@@ -10,10 +10,10 @@ function Skeleton({
     radius?: string;
 }) {
     return (
-        <div
+        <span
             style={{ width: width, height: height, background: bg, opacity: "30%" }}
             className={`rounded-${radius} animate-pulse`}
-        ></div>
+        ></span>
     );
 }
 export default Skeleton;

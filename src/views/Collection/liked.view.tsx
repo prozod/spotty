@@ -27,7 +27,7 @@ export default function CollectionLiked() {
         <section className="absolute top-0 flex flex-col bg-black">
             {!error && (
                 <div
-                    className={`relative z-0 flex h-full w-full items-center gap-4 bg-indigo-500 px-8 pb-8 pt-20`}
+                    className={`relative z-0 flex h-full w-full items-center gap-4 bg-indigo-500 px-8 pb-8 pt-28`}
                 >
                     <div className="absolute inset-0 h-full w-full bg-gradient-to-t from-black/80 to-transparent"></div>
                     <span className="flex h-[250px] w-[250px] items-center justify-center rounded-md bg-gradient-to-br from-blue-500 to-purple-400 aspect-square  shadow-sm">

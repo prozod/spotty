@@ -1,18 +1,19 @@
 import { useQuery } from "@tanstack/react-query";
 import { AiOutlinePlus } from "react-icons/ai";
-import { useNavigate } from "react-router-dom";
-import { playlistService } from "../../../services/playlist.service";
 import { PiPlaylistFill } from "react-icons/pi";
+import { Link, useLocation } from "react-router-dom";
+import { playlistService } from "../../../services/playlist.service";
 
 export default function Library() {
-  const navigate = useNavigate();
+  const location = useLocation();
+  const playlistId = location?.pathname?.split("/")[2] as string;
   const { data } = useQuery(
     [playlistService.currentUserPlaylists.key],
     playlistService.currentUserPlaylists.fn
   );
-  console.log(data);
+
   return (
-    <nav className="overflow-hidden">
+    <nav className="overflow-hidden pb-8">
       <div className="flex justify-between gap-4 py-2 pl-6 pr-2 text-sm font-bold">
         <span className="flex items-center gap-4 text-xl text-white">
           Playlists
@@ -22,21 +23,27 @@ export default function Library() {
           New
         </span>
       </div>
-      <div className="h-full pb-2 ml-3 overflow-y-scroll">
-        {data?.items?.map((playlist, i) => (
-          <span className="flex items-center gap-4 px-2 py-2 text-white rounded-md hover:bg-white/10 group text-opacity-70 hover:text-opacity-100">
+      <div className="h-[95%] rounded-md ml-3 overflow-y-scroll">
+        {data?.items?.map((playlist) => (
+          <Link
+            to={`/playlist/${playlist.id}`}
+            className="flex items-center gap-4 px-2 py-2 text-white rounded-md hover:bg-white/10 group text-opacity-70 hover:text-opacity-100"
+            key={playlist.id}
+          >
             <PiPlaylistFill
               size={22}
-              className={`${i === 3 && "text-spotify animate-pulse"}`}
+              className={`${
+                playlistId === playlist.id && "text-spotify animate-pulse"
+              }`}
             />
             <p
               className={`group-hover:text-opacity-100 group-hover:cursor-pointer truncate ${
-                i === 3 && "text-spotify"
+                playlistId === playlist.id && "text-spotify"
               }`}
             >
               {playlist.name}
             </p>
-          </span>
+          </Link>
         ))}
       </div>
     </nav>

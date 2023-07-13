@@ -6,6 +6,7 @@ import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import ErrorPage from "./error-page";
 import "./index.css";
 import CollectionLiked from "./views/Collection/liked.view";
+import Playlist from "./views/Collection/playlist.view";
 import Home from "./views/Home/home.view";
 import Login from "./views/Login/login.view";
 import Search from "./views/Search/search.view";
@@ -25,6 +26,10 @@ const router = createBrowserRouter([
             {
                 path: "/collection/liked",
                 element: <CollectionLiked />,
+            },
+            {
+                path: "/playlist/:id",
+                element: <Playlist />,
             },
         ],
     },
