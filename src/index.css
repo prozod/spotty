@@ -113,18 +113,6 @@ input[type="range"]::-moz-range-thumb {
   background: #1ed760;
 }
 
-/* WebKit*/
-/* input[type="range"]::-webkit-slider-runnable-track { */
-/*   -webkit-appearance: none; */
-/*   background-color: #282828; */
-/*   border: none; */
-/*   height: 5px; */
-/*   border-radius: 5px; */
-/*   outline: none; */
-/*   display: flex; */
-/*   align-items: center; */
-/* } */
-
 input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;

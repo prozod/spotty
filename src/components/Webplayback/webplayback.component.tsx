@@ -7,16 +7,20 @@ import { WebPlaybackStateObject } from "../../types/spotify";
 
 function WebPlayback() {
   const queryClient = useQueryClient();
-  const [updatePlaybackState, updatePlayerSDK, updateIsActive, updateDeviceId] =
-    usePlaybackStore(
-      (state) => [
-        state.updatePlaybackState,
-        state.updatePlayerSDK,
-        state.updateIsActive,
-        state.updateDeviceId,
-      ],
-      shallow
-    );
+  const [
+    updateWebSDKPlayback,
+    updatePlayerSDK,
+    updateIsActive,
+    updateDeviceId,
+  ] = usePlaybackStore(
+    (state) => [
+      state.updateWebSDKPlayback,
+      state.updatePlayerSDK,
+      state.updateIsActive,
+      state.updateDeviceId,
+    ],
+    shallow
+  );
 
   useEffect(() => {
     const script = document.createElement("script");
@@ -38,8 +42,8 @@ function WebPlayback() {
 
       player.addListener("ready", ({ device_id }: { device_id: string }) => {
         console.log("Ready with Device ID", device_id);
-        updateDeviceId(device_id);
         queryClient.invalidateQueries([playbackService.devices.key]);
+        updateDeviceId(device_id);
       });
 
       player.addListener(
@@ -59,9 +63,10 @@ function WebPlayback() {
           }
 
           console.log("STATE CHANGED - PLAYER EVENT");
-          updatePlaybackState(state);
           queryClient.invalidateQueries([playbackService.devices.key]);
           queryClient.invalidateQueries([playbackService.playbackState.key]);
+
+          updateWebSDKPlayback(state);
 
           player.getCurrentState().then((state: WebPlaybackStateObject) => {
             !state ? updateIsActive(false) : updateIsActive(true);

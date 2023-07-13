@@ -129,6 +129,8 @@ export interface CurrentlyPlaying<T> {
   currently_playing_type: "track" | "episode" | "ad" | "unknown";
   /** If something is currently playing, return true. */
   is_playing: boolean;
+  /** The device that is currently active. */
+  device: Device;
   /** Progress into the currently playing track or episode. */
   progress_ms: number | null;
   /** The item of the context. */

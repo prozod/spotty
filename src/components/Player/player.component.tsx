@@ -1,10 +1,18 @@
 import { useQuery } from "@tanstack/react-query";
+import { useEffect } from "react";
+import { shallow } from "zustand/shallow";
 import { playbackService } from "../../services/playback.service";
+import usePlaybackStore from "../../store/playback.store";
 import PlayerBar from "./playerBar.component";
 import PlayerControls from "./playerControls.component";
 import PlayerTile from "./playerTile.component";
 
 function Player() {
+  const [updatePlaybackState] = usePlaybackStore(
+    (state) => [state.updatePlaybackState],
+    shallow
+  );
+
   const { data } = useQuery(
     [playbackService.playbackState.key],
     playbackService.playbackState.fn,
@@ -12,11 +20,20 @@ function Player() {
       refetchInterval: 1000,
     }
   );
+
+  useEffect(() => {
+    updatePlaybackState(data);
+  }, [data]);
+
   return (
-    <div className="grid items-center grid-cols-3 px-4 pt-3 border-t-[1px] border-grack-800">
-      <PlayerTile data={data} />
-      <PlayerBar playback={data} />
-      <PlayerControls />
+    <div className="grid items-center grid-cols-3 px-4 pt-3">
+      {data && (
+        <>
+          <PlayerTile />
+          <PlayerBar />
+          <PlayerControls />
+        </>
+      )}
     </div>
   );
 }

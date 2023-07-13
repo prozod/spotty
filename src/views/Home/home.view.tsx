@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { useEffect } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import { shallow } from "zustand/shallow";
@@ -37,24 +38,20 @@ function Home() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data, loggedIn]);
 
-  console.log(
-    "Playing on Spotty: ",
-    devices?.devices.find((dev) => dev.id === device_id)?.is_active
-  );
-
   return (
     <>
       <WebPlayback />
+      <ReactQueryDevtools />
       <main
-        className={`grid h-screen w-screen grid-cols-6 grid-rows-1 relative`}
+        className={`grid h-screen w-screen grid-cols-appLayout grid-rows-1 relative`}
       >
         <div
-          className={`relative rounded-md col-span-3 lg:col-span-2 xl:col-span-1 bg-transparent`}
+          className={`relative rounded-md bg-transparent resize-x min-w-[250px] max-w-[450px] overflow-x-auto`}
         >
           <Sidebar />
         </div>
         <div
-          className={`bg-gradient-to-tr from-grack-900 to-black  relative col-span-full col-start-4 lg:col-start-3 xl:col-start-2 ml-2 mb-2 overflow-x-auto border-l-[1px] border-grack-800`}
+          className={`bg-gradient-to-tr from-grack-900 to-black relative overflow-x-auto border-l-[1px] border-grack-800`}
         >
           <Header />
           {location.pathname === "/" && (
@@ -78,12 +75,12 @@ function Home() {
           )}
           {location.pathname !== "/" && <Outlet />}
         </div>
-        <div className="pb-4  col-span-full">
+        <div className="pb-3 col-span-full border-t-[1px] border-grack-800">
           <Player />
         </div>
 
         {!devices?.devices.find((dev) => dev.id === device_id)?.is_active && (
-          <div className="flex items-center justify-end h-[24px] px-2 text-xs font-semibold  text-black bg-spotify justify-right col-span-full mt-2">
+          <div className="flex items-center justify-end h-[24px] px-2 text-xs font-semibold  text-black bg-spotify justify-right col-span-full">
             <p className="flex items-center gap-2 mr-4">
               <svg
                 role="presentation"
@@ -107,3 +104,4 @@ function Home() {
 }
 
 export default Home;
+//col-start-4 lg:col-start-3 xl:col-start-2

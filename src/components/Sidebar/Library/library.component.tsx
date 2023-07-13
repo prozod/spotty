@@ -3,10 +3,13 @@ import { AiOutlinePlus } from "react-icons/ai";
 import { PiPlaylistFill } from "react-icons/pi";
 import { Link, useLocation } from "react-router-dom";
 import { playlistService } from "../../../services/playlist.service";
+import usePlaybackStore from "../../../store/playback.store";
+import { shallow } from "zustand/shallow";
 
 export default function Library() {
   const location = useLocation();
-  const playlistId = location?.pathname?.split("/")[2] as string;
+  const visitedPlaylistId = location?.pathname?.split("/")[2] as string;
+  const [playback] = usePlaybackStore((state) => [state.playback], shallow);
   const { data } = useQuery(
     [playlistService.currentUserPlaylists.key],
     playlistService.currentUserPlaylists.fn
@@ -27,18 +30,22 @@ export default function Library() {
         {data?.items?.map((playlist) => (
           <Link
             to={`/playlist/${playlist.id}`}
-            className="flex items-center gap-4 px-2 py-2 text-white rounded-md hover:bg-white/10 group text-opacity-70 hover:text-opacity-100"
+            className={`flex items-center gap-4 px-2 py-2 text-white rounded-md hover:bg-white/10 group text-opacity-70 hover:text-opacity-100 mr-1 ${
+              visitedPlaylistId === playlist.id && "bg-white/10"
+            }`}
             key={playlist.id}
           >
             <PiPlaylistFill
               size={22}
               className={`${
-                playlistId === playlist.id && "text-spotify animate-pulse"
+                playlist.id === playback?.context?.uri.split(":")[2] &&
+                "text-spotify animate-pulse"
               }`}
             />
             <p
               className={`group-hover:text-opacity-100 group-hover:cursor-pointer truncate ${
-                playlistId === playlist.id && "text-spotify"
+                playlist.id === playback?.context?.uri.split(":")[2] &&
+                "text-spotify"
               }`}
             >
               {playlist.name}

@@ -39,7 +39,7 @@ function PlayerControls() {
   });
 
   const transfer = useMutation({
-    mutationFn: (id) => transferPlayback({ device_id: id }),
+    mutationFn: (id: string) => transferPlayback({ device_id: id }),
   });
 
   function deviceType(device: Device) {
@@ -50,7 +50,7 @@ function PlayerControls() {
           className="text-white hover:bg-grack-600"
           icon={<AiOutlineLaptop size={22} />}
           data-deviceid={device.id}
-          onClick={() => transfer.mutate(device.id)}
+          onClick={() => transfer.mutate(device.id as string)}
         >
           {device.name}
         </Menu.Item>
@@ -62,7 +62,7 @@ function PlayerControls() {
           className="text-white hover:bg-grack-600"
           icon={<GiSmartphone size={22} />}
           data-deviceid={device.id}
-          onClick={() => transfer.mutate(device.id)}
+          onClick={() => transfer.mutate(device.id as string)}
         >
           {device.name}
         </Menu.Item>
@@ -74,7 +74,7 @@ function PlayerControls() {
           className="text-white hover:bg-grack-600"
           icon={<LuSpeaker size={22} />}
           data-deviceid={device.id}
-          onClick={() => transfer.mutate(device.id)}
+          onClick={() => transfer.mutate(device.id as string)}
         >
           {device.name}
         </Menu.Item>
@@ -91,8 +91,9 @@ function PlayerControls() {
             onClick={(e) =>
               setActiveBtn(
                 () =>
-                  e?.target?.parentNode?.getAttribute("aria-expanded") ===
-                  "true"
+                  (e?.target as HTMLElement)?.parentElement?.getAttribute(
+                    "aria-expanded"
+                  ) === "true"
               )
             }
           >

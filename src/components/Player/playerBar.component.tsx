@@ -1,23 +1,27 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { BiRepeat } from "react-icons/bi";
 import { FaPauseCircle, FaPlayCircle } from "react-icons/fa";
 import { IoShuffleOutline } from "react-icons/io5";
 import { MdSkipNext, MdSkipPrevious } from "react-icons/md";
 import { shallow } from "zustand/shallow";
-import { toggleShuffle } from "../../services/playback.service";
+import {
+  playbackService,
+  toggleShuffle,
+} from "../../services/playback.service";
 import usePlaybackStore from "../../store/playback.store";
 import millisToMinutesAndSeconds from "../../utils/msConversion";
 
-function PlayerBar({ playback }) {
+function PlayerBar() {
+  const queryClient = useQueryClient();
   const [sliderPos, setSliderPos] = useState(0);
   const [hovered, setHovered] = useState(false);
-  let progress_ms = Number((playback?.progress_ms! / 1000)?.toFixed(0));
-  let duration_ms = Number((playback?.item?.duration_ms! / 1000)?.toFixed(0));
-  const [pb, player] = usePlaybackStore(
-    (state) => [state.playback, state.player],
+  const [playback, webPlayback, player] = usePlaybackStore(
+    (state) => [state.playback, state.webSDKplayback, state.player],
     shallow
   );
+  let progress_ms = Number((playback?.progress_ms! / 1000)?.toFixed(0));
+  let duration_ms = Number((playback?.item?.duration_ms! / 1000)?.toFixed(0));
 
   useEffect(() => {
     setSliderPos(progress_ms);
@@ -27,7 +31,7 @@ function PlayerBar({ playback }) {
     ((sliderPos / duration_ms) * 100).toFixed(2) + "%";
 
   const toggShuffle = useMutation({
-    mutationFn: (state) => toggleShuffle({ state: state }),
+    mutationFn: (state: boolean) => toggleShuffle({ state: state }),
   });
 
   return (
@@ -36,15 +40,34 @@ function PlayerBar({ playback }) {
         <IoShuffleOutline
           size={22}
           onClick={() =>
-            toggShuffle.mutate(pb?.shuffle === true ? "false" : "true")
+            toggShuffle.mutate(webPlayback?.shuffle === true ? false : true)
           }
-          className={pb?.shuffle === true ? "text-spotify" : "text-white"}
+          className={
+            webPlayback?.shuffle === true ? "text-spotify" : "text-white"
+          }
         />
+
         <MdSkipPrevious size={28} onClick={() => player.previousTrack()} />
         {playback?.is_playing ? (
-          <FaPauseCircle size={28} onClick={() => player.togglePlay()} />
+          <FaPauseCircle
+            size={28}
+            onClick={() => {
+              player?.togglePlay();
+              queryClient.invalidateQueries([
+                playbackService.playbackState.key,
+              ]);
+            }}
+          />
         ) : (
-          <FaPlayCircle size={28} onClick={() => player.togglePlay()} />
+          <FaPlayCircle
+            size={28}
+            onClick={() => {
+              player?.togglePlay();
+              queryClient.invalidateQueries([
+                playbackService.playbackState.key,
+              ]);
+            }}
+          />
         )}
         <MdSkipNext size={28} onClick={() => player.nextTrack()} />
         <BiRepeat size={22} className="rotate-180" />

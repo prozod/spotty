@@ -14,39 +14,39 @@ import Search from "./views/Search/search.view";
 const queryClient = new QueryClient();
 
 const router = createBrowserRouter([
-    {
-        path: "/",
-        element: <Home />,
-        errorElement: <ErrorPage />,
-        children: [
-            {
-                path: "/search",
-                element: <Search />,
-            },
-            {
-                path: "/collection/liked",
-                element: <CollectionLiked />,
-            },
-            {
-                path: "/playlist/:id",
-                element: <Playlist />,
-            },
-        ],
-    },
-    {
-        path: "/login",
-        element: <Login />,
-        errorElement: <ErrorPage />,
-    },
+  {
+    path: "/",
+    element: <Home />,
+    errorElement: <ErrorPage />,
+    children: [
+      {
+        path: "/search",
+        element: <Search />,
+      },
+      {
+        path: "/collection/liked",
+        element: <CollectionLiked />,
+      },
+      {
+        path: "/playlist/:id",
+        element: <Playlist />,
+      },
+    ],
+  },
+  {
+    path: "/login",
+    element: <Login />,
+    errorElement: <ErrorPage />,
+  },
 ]);
 
 ReactDOM.render(
-    <React.StrictMode>
-        <MantineProvider withNormalizeCSS>
-            <QueryClientProvider client={queryClient}>
-                <RouterProvider router={router} />
-            </QueryClientProvider>
-        </MantineProvider>
-    </React.StrictMode>,
-    document.getElementById("root")
+  <React.StrictMode>
+    <MantineProvider withNormalizeCSS>
+      <QueryClientProvider client={queryClient}>
+        <RouterProvider router={router} />
+      </QueryClientProvider>
+    </MantineProvider>
+  </React.StrictMode>,
+  document.getElementById("root")
 );
