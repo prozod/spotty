@@ -67,7 +67,71 @@ export const toggleShuffle = async ({
   });
 };
 
+export const playSong = ({
+  spotify_uri,
+  device_id,
+  position_ms,
+}: {
+  spotify_uri?: string | null;
+  device_id?: string;
+  position_ms?: number;
+}) => {
+  fetch(
+    `https://api.spotify.com/v1/me/player/play${
+      device_id ? "?device_id=" + device_id : ""
+    }`,
+    {
+      method: "PUT",
+      body: JSON.stringify({
+        uris: [spotify_uri] || null,
+        position_ms: position_ms,
+      }),
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${document.cookie.split("access_token=")[1]}`,
+      },
+    }
+  );
+};
+export const playContext = ({
+  offset,
+  device_id,
+  context_uri,
+  progress,
+}: {
+  device_id?: string | null;
+  offset?: number | null;
+  progress?: number | null;
+  context_uri?: string | null;
+}) => {
+  fetch(
+    `https://api.spotify.com/v1/me/player/play${
+      device_id ? "?device_id=" + device_id : ""
+    }`,
+    {
+      method: "PUT",
+      body: JSON.stringify({
+        context_uri: context_uri,
+        offset: {
+          position: offset,
+        },
+        position_ms: progress,
+      }),
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${document.cookie.split("access_token=")[1]}`,
+      },
+    }
+  );
+};
+
 export const playbackService = {
   playbackState: { key: "playback-state", fn: getPlaybackState },
+  play: {
+    contextKey: "context-",
+    contextFn: playContext,
+    songKey: "context-",
+    songFn: playSong,
+  },
   devices: { key: "devices", fn: getDevices },
 };

@@ -4,11 +4,12 @@
 // import { playContext, playSong } from "@.utils/playerActions";
 import { useEffect, useState } from "react";
 import { BsPauseFill, BsPlayFill } from "react-icons/bs";
+import { shallow } from "zustand/shallow";
+import { playbackService } from "../../services/playback.service";
+import usePlaybackStore from "../../store/playback.store";
 import { PlaylistTrack, Track } from "../../types/spotify";
 import millisToMinutesAndSeconds from "../../utils/msConversion";
 import Skeleton from "../Skeleton/skeleton.component";
-import usePlaybackStore from "../../store/playback.store";
-import { shallow } from "zustand/shallow";
 
 export const WavebarIcon = () => {
   return (
@@ -47,9 +48,8 @@ function PlaylistItem({
     total || 0
   );
   const song = playlistItem?.track !== undefined ? playlistItem?.track : track;
-  // const songCurrentlyPlaying = playlist?.tracks.items.find(
-  //   (track) => track.track?.id === playback?.item?.id
-  // );
+
+  const [device_id] = usePlaybackStore((state) => [state.device_id], shallow);
 
   useEffect(() => {
     setCurrentSongPlaying(
@@ -121,6 +121,12 @@ function PlaylistItem({
           //     });
           //   }
           // }}
+          onClick={() => {
+            playbackService.play.songFn({
+              device_id: device_id,
+              spotify_uri: song?.uri,
+            });
+          }}
         >
           {playButton}
         </button>

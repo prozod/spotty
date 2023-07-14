@@ -20,8 +20,8 @@ function Home() {
     shallow
   );
 
-  const [device_id, devices] = usePlaybackStore(
-    (state) => [state.device_id, state.devices],
+  const [device_id, devices, playback] = usePlaybackStore(
+    (state) => [state.device_id, state.devices, state.playback],
     shallow
   );
 
@@ -41,7 +41,6 @@ function Home() {
   return (
     <>
       <WebPlayback />
-      <ReactQueryDevtools />
       <main
         className={`grid h-screen w-screen grid-cols-appLayout grid-rows-1 relative`}
       >

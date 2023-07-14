@@ -27,13 +27,9 @@ function Player() {
 
   return (
     <div className="grid items-center grid-cols-3 px-4 pt-3">
-      {data && (
-        <>
-          <PlayerTile />
-          <PlayerBar />
-          <PlayerControls />
-        </>
-      )}
+      <PlayerTile />
+      <PlayerBar />
+      <PlayerControls />
     </div>
   );
 }
