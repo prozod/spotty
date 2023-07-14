@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 import { shallow } from "zustand/shallow";
 import usePlaybackStore from "../../store/playback.store";
+import { determineImgSourcePath } from "../../utils/determineImgSourcePath";
 
 function PlayerTile() {
   const [marqueeTrigger, setMarqueeTrigger] = useState<boolean>(false);
@@ -18,7 +20,7 @@ function PlayerTile() {
     <div className="text-sm flex gap-2 items-center justify-self-start">
       <div>
         <img
-          src={playback?.item?.album?.images[1].url}
+          src={playback && determineImgSourcePath(playback)}
           alt={playback?.item?.name}
           width={55}
           className="rounded-md"
@@ -44,13 +46,32 @@ function PlayerTile() {
         </p>
 
         <p className="line-clamp-1">
-          {playback?.item?.artists.map((artist, i) => (
-            <span className="hover:text-red-200 text-gray-400" key={artist?.id}>
-              {playback?.item?.artists.length === i + 1
-                ? artist.name
-                : artist.name.concat(", ")}
-            </span>
-          ))}
+          {playback !== undefined &&
+            playback?.currently_playing_type === "track" &&
+            "artists" in playback.item &&
+            playback?.item?.artists.map((artist, i) => (
+              <Link
+                to={`/artist/${artist?.id}`}
+                className="hover:underline cursor-pointer hover:text-white text-gray-400"
+                key={artist?.id}
+              >
+                {"artists" in playback.item &&
+                playback?.item?.artists.length === i + 1
+                  ? artist.name
+                  : artist.name.concat(", ")}
+              </Link>
+            ))}
+
+          {playback !== undefined &&
+            playback?.currently_playing_type === "episode" && (
+              <Link
+                to={`/show/${playback?.item?.id}`}
+                className="hover:underline cursor-pointer hover:text-white text-gray-400"
+                key={playback?.item?.uri}
+              >
+                {"show" in playback.item && playback?.item?.show?.name}
+              </Link>
+            )}
         </p>
       </div>
     </div>

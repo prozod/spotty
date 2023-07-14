@@ -86,15 +86,23 @@ function PlayerBar() {
             className="transition-all playbar"
             type="range"
             min={0}
-            max={duration_ms}
+            max={duration_ms || 0}
             step="0.001"
-            value={sliderPos.toFixed(1)}
+            value={sliderPos || 0}
             onMouseEnter={() => setHovered(true)}
             onMouseLeave={() => setHovered(false)}
             style={{
               background: `linear-gradient(to right, ${
                 hovered ? "#1ed760" : "#fff"
-              } ${progress_to_percentage}, ${progress_to_percentage}, #282828 0%, #282828 100%)`,
+              } ${
+                progress_to_percentage !== "NaN%"
+                  ? progress_to_percentage
+                  : "0%"
+              }, ${
+                progress_to_percentage !== "NaN%"
+                  ? progress_to_percentage
+                  : "0%"
+              }, #282828 0%, #282828 100%)`,
             }}
             onChange={(e) => {
               setSliderPos(+e.currentTarget.value);

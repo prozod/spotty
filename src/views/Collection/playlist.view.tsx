@@ -9,7 +9,7 @@ import Skeleton from "../../components/Skeleton/skeleton.component";
 import { playlistService } from "../../services/playlist.service";
 import usePlaybackStore from "../../store/playback.store";
 import usePlaylistStore from "../../store/playlist.store";
-import { PlaylistTrack } from "../../types/spotify";
+import useUserStore from "../../store/user.store";
 import getDominantColor from "../../utils/dominantColor";
 
 const numFormat = new Intl.NumberFormat("en-US");
@@ -18,13 +18,16 @@ function Playlist() {
   const location = useLocation();
   const playlistId = location?.pathname?.split("/")[2] as string;
   const [bgColor, setBgColor] = useState<number[] | null>(null);
+  const [loggedIn] = useUserStore((state) => [state.loggedIn], shallow);
 
   const {
     data: playlist,
     error,
     isLoading,
-  } = useQuery([playlistService.getPlaylist.key.concat(playlistId)], async () =>
-    playlistService.getPlaylist.fn({ id: playlistId })
+  } = useQuery(
+    [playlistService.getPlaylist.key.concat(playlistId)],
+    async () => playlistService.getPlaylist.fn({ id: playlistId }),
+    { enabled: loggedIn }
   );
   const [playback] = usePlaybackStore((state) => [state.playback], shallow);
 
@@ -39,10 +42,6 @@ function Playlist() {
     }
     playlistHeaderBgColor();
   }, [playlist]);
-
-  // const currentlyPlayingBelongsToPlaylist = playlist?.tracks.items.includes(
-  //   (track) => (track.track?.id === playback?.item?.id ? true : false)
-  // );
 
   return (
     <section className="absolute top-0 flex flex-col bg-black">
@@ -88,9 +87,9 @@ function Playlist() {
           {playlist.images && (
             <img
               src={playlist?.images[0]?.url}
+              alt={(playlist?.owner?.display_name as string) || playlist?.id}
               width={250}
               height={250}
-              alt={playlist.id}
               className="z-10 aspect-square h-auto rounded-md"
             />
           )}
@@ -209,8 +208,7 @@ function Playlist() {
                 )}*/}
         {playlist?.tracks?.items?.map((track, i) => (
           <PlaylistItem
-            playlistContext={playlist}
-            playlistItem={track as PlaylistTrack}
+            playlistItem={track}
             key={track?.track?.id}
             total={i + 1}
           />

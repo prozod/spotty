@@ -65,6 +65,7 @@ function WebPlayback() {
           console.log("STATE CHANGED - PLAYER EVENT");
           queryClient.invalidateQueries([playbackService.devices.key]);
           queryClient.invalidateQueries([playbackService.playbackState.key]);
+          queryClient.invalidateQueries([playbackService.playbackQueue.key]);
 
           updateWebSDKPlayback(state);
 

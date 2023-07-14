@@ -6,14 +6,16 @@ import { BiLinkExternal } from "react-icons/bi";
 import { GiSmartphone } from "react-icons/gi";
 import { IoVolumeHigh } from "react-icons/io5";
 import { LuLaptop2, LuSpeaker } from "react-icons/lu";
-import { PiWaveform } from "react-icons/pi";
+import { PiQueueFill, PiWaveform } from "react-icons/pi";
 import { shallow } from "zustand/shallow";
 import {
   playbackService,
   transferPlayback,
 } from "../../services/playback.service";
 import usePlaybackStore from "../../store/playback.store";
+import useUserStore from "../../store/user.store";
 import { Device } from "../../types/spotify";
+import { Link } from "react-router-dom";
 
 function PlayerControls() {
   const [vol, setVol] = useState(0);
@@ -23,10 +25,12 @@ function PlayerControls() {
     (state) => [state.player, state.updateDevices],
     shallow
   );
+  const [loggedIn] = useUserStore((state) => [state.loggedIn], shallow);
 
   const { data } = useQuery(
     [playbackService.devices.key],
-    playbackService.devices.fn
+    playbackService.devices.fn,
+    { enabled: loggedIn }
   );
 
   useEffect(() => {
@@ -84,10 +88,22 @@ function PlayerControls() {
 
   return (
     <div className="flex items-center gap-4 justify-self-end">
+      <Link to="/queue">
+        <button aria-label="Devices">
+          <PiQueueFill
+            size={22}
+            className={`${
+              location.pathname === "/queue" ? "text-spotify" : "text-white"
+            }`}
+          />
+        </button>
+      </Link>
+
       <Menu shadow="md" width={280}>
         <Menu.Target>
           <button
             ref="playbackDevRef"
+            aria-label="Devices"
             onClick={(e) =>
               setActiveBtn(
                 () =>

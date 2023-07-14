@@ -1,12 +1,10 @@
-// import { addItemToQueue } from "@.services/player.services";
-// import { usePlaybackStore } from "@.store/player";
-// import { PlaylistTrack, Track } from "@.types/spotify";
-// import { playContext, playSong } from "@.utils/playerActions";
 import { useEffect, useState } from "react";
 import { BsPauseFill, BsPlayFill } from "react-icons/bs";
+import { Link, useLocation } from "react-router-dom";
 import { shallow } from "zustand/shallow";
 import { playbackService } from "../../services/playback.service";
 import usePlaybackStore from "../../store/playback.store";
+import useUserStore from "../../store/user.store";
 import { PlaylistTrack, Track } from "../../types/spotify";
 import millisToMinutesAndSeconds from "../../utils/msConversion";
 import Skeleton from "../Skeleton/skeleton.component";
@@ -30,39 +28,57 @@ export const WavebarIcon = () => {
 };
 
 function PlaylistItem({
-  playlistContext,
   track,
   playlistItem,
   total,
   loading,
 }: {
-  track?: Track | null;
-  playlistItem?: PlaylistTrack | null;
+  track?: Track;
+  playlistItem?: PlaylistTrack;
   total?: number;
-  playlistContext?: any;
   loading?: boolean;
 }) {
+  const location = useLocation();
+  const [currentContext, setCurrentContext] = useState<string | null>(null);
   const [currentSongPlaying, setCurrentSongPlaying] = useState<boolean>(false);
   const [playback] = usePlaybackStore((state) => [state.playback], shallow);
+  const [currentUser] = useUserStore((state) => [state.currentUser], shallow);
   const [playButton, setPlayButton] = useState<JSX.Element | number | string>(
     total || 0
   );
-  const song = playlistItem?.track !== undefined ? playlistItem?.track : track;
-
   const [device_id] = usePlaybackStore((state) => [state.device_id], shallow);
+
+  const song =
+    playlistItem && "track" in playlistItem ? playlistItem?.track : track;
 
   useEffect(() => {
     setCurrentSongPlaying(
       playback?.item?.id === song?.id && (playback?.is_playing as boolean)
     );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [playback, total]);
+
+  useEffect(() => {
     if (currentSongPlaying) {
       setPlayButton(<WavebarIcon />);
     } else {
       setPlayButton(total as number);
     }
-  }, [playback, total]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentSongPlaying]);
 
-  // let playingDevice = devices?.devices.filter((d) => d.is_active && d);
+  useEffect(() => {
+    if (location?.pathname === "/collection/liked") {
+      setCurrentContext(`spotify:user:${currentUser?.id}:collection`);
+    } else {
+      setCurrentContext(
+        `spotify:${location.pathname.split("/")[1]}:${
+          location.pathname.split("/")[2]
+        }`
+      );
+    }
+  }, [location, currentUser]);
+
   if (loading) {
     return (
       <section className="gap-4 text-sm grid-cols-playlist grid px-2 py-2 rounded-md hover:bg-white/10 items-center">
@@ -76,63 +92,51 @@ function PlaylistItem({
   } else {
     return (
       <div
-        className="text-sm grid-cols-playlistMobile lg:grid-cols-playlist grid px-2 py-2 rounded-md hover:bg-white/10 items-center"
+        className="hover:cursor-pointer text-sm grid-cols-playlistMobile lg:grid-cols-playlist grid px-2 py-2 rounded-md hover:bg-white/10 items-center"
         key={song?.uri}
-        onMouseEnter={() => {
-          if (currentSongPlaying) {
-            setPlayButton(<BsPauseFill size={18} />);
-          } else {
-            setPlayButton(<BsPlayFill size={18} />);
-          }
+        onMouseOver={() => {
+          currentSongPlaying
+            ? setPlayButton(<BsPauseFill size={18} />)
+            : setPlayButton(<BsPlayFill size={18} />);
         }}
         onMouseLeave={() => {
-          if (currentSongPlaying) {
-            <WavebarIcon />;
-          } else {
-            setPlayButton(total!);
-          }
+          currentSongPlaying
+            ? setPlayButton(<WavebarIcon />)
+            : setPlayButton(total as number);
         }}
-        onFocus={() => setPlayButton(<BsPlayFill size={18} />)}
-        onBlur={() => setPlayButton(total!)}
+        onDoubleClick={() => {
+          playbackService.play.contextFn({
+            device_id: device_id,
+            context_uri: currentContext,
+            offset: Number(total) - 1,
+          });
+        }}
       >
         <button
-          className="col-start-1 flex items-center justify-center cursor-pointer w-auto h-auto text-sm aspect-square transition-all"
+          className={`col-start-1 flex items-center justify-center cursor-pointer w-auto h-auto text-sm aspect-square transition-all ${
+            location.pathname === "/queue" && "cursor-not-allowed"
+          }`}
           data-id={song?.uri}
           data-track-index={total}
-          // onClick={(e) => {
-          //   if (playlistContext) {
-          //     console.log(
-          //       "Playing track id: ",
-          //       Number(total) - 1,
-          //       song?.name,
-          //       playlistContext?.uri,
-          //       song?.uri
-          //     );
-          //     playContext({
-          //       access_token: accessToken!,
-          //       context_uri: playlistContext?.uri,
-          //       offset: Number(total) - 1,
-          //     });
-          //   } else {
-          //     playSong({
-          //       access_token: accessToken!,
-          //       device_id: current_device,
-          //       spotify_uri: song?.uri,
-          //     });
-          //   }
-          // }}
           onClick={() => {
-            playbackService.play.songFn({
-              device_id: device_id,
-              spotify_uri: song?.uri,
-            });
+            if (location.pathname !== "/queue") {
+              playbackService.play.contextFn({
+                device_id: device_id,
+                context_uri: currentContext,
+                offset: Number(total) - 1,
+              });
+            }
+            // playbackService.play.songFn({
+            //   device_id: device_id,
+            //   spotify_uri: song?.uri,
+            // });
           }}
         >
           {playButton}
         </button>
         <div className="ml-2 flex items-center gap-3 w-full">
           <img
-            src={song?.album?.images[0]?.url}
+            src={(song as Track)?.album?.images[1].url}
             alt={song?.name}
             width={40}
             height={40}
@@ -143,41 +147,30 @@ function PlaylistItem({
               className={`cursor-pointer line-clamp-1 ${
                 playback?.item?.id === song?.id &&
                 playback?.is_playing &&
-                "text-green-400"
+                "text-spotify"
               }`}
-              // onDoubleClick={() => {
-              //   addSongToQueue.mutate(song?.uri);
-              // }}
             >
               {song?.name}
             </p>
-            <div className="inline-flex">
-              {song?.artists?.map((artist, i: number) => {
-                if (i + 1 === song?.artists.length) {
-                  return (
-                    <span
-                      key={artist.id}
-                      className="cursor-pointer opacity-60 hover:opacity-90 hover:underline"
-                    >
-                      {artist.name}
-                    </span>
-                  );
-                } else {
-                  return (
-                    <span key={artist.id} className="flex">
-                      <span className="cursor-pointer opacity-60 hover:opacity-90 hover:underline line-clamp-1">
-                        {artist.name}
-                      </span>
-                      <span className="opacity-60">,&nbsp;</span>
-                    </span>
-                  );
-                }
-              })}
+            <div>
+              {song &&
+                "artists" in song &&
+                song?.artists.map((artist, i) => (
+                  <Link
+                    to={`/artist/${artist?.id}`}
+                    className="hover:underline cursor-pointer hover:text-white text-gray-400"
+                    key={artist?.id}
+                  >
+                    {song?.artists.length === i + 1
+                      ? artist.name
+                      : artist.name.concat(", ")}
+                  </Link>
+                ))}
             </div>
           </div>
         </div>
         <p className="col-start-3 opacity-60 hover:underline hover:opacity-90 cursor-pointer line-clamp-2 hidden lg:block">
-          {song?.album?.name}
+          {song && "album" in song && song?.album?.name}
         </p>
         {/*
      adding timeStyle prop to Intl API will display the time too, but Spotify doenst show it so omitting it wont show it
@@ -190,7 +183,7 @@ function PlaylistItem({
           </p>
         )}
         <p className="col-start-5 cursor-default opacity-60">
-          {millisToMinutesAndSeconds(song?.duration_ms)}
+          {millisToMinutesAndSeconds(song?.duration_ms || 0)}
         </p>
       </div>
     );

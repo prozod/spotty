@@ -2,17 +2,20 @@ import { useQuery } from "@tanstack/react-query";
 import { AiOutlinePlus } from "react-icons/ai";
 import { PiPlaylistFill } from "react-icons/pi";
 import { Link, useLocation } from "react-router-dom";
+import { shallow } from "zustand/shallow";
 import { playlistService } from "../../../services/playlist.service";
 import usePlaybackStore from "../../../store/playback.store";
-import { shallow } from "zustand/shallow";
+import useUserStore from "../../../store/user.store";
 
 export default function Library() {
   const location = useLocation();
   const visitedPlaylistId = location?.pathname?.split("/")[2] as string;
   const [playback] = usePlaybackStore((state) => [state.playback], shallow);
+  const [loggedIn] = useUserStore((state) => [state.loggedIn], shallow);
   const { data } = useQuery(
     [playlistService.currentUserPlaylists.key],
-    playlistService.currentUserPlaylists.fn
+    playlistService.currentUserPlaylists.fn,
+    { enabled: loggedIn }
   );
 
   return (

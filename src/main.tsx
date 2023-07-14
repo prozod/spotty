@@ -10,6 +10,7 @@ import Playlist from "./views/Collection/playlist.view";
 import Home from "./views/Home/home.view";
 import Login from "./views/Login/login.view";
 import Search from "./views/Search/search.view";
+import Queue from "./views/Queue/queue.view";
 
 const queryClient = new QueryClient();
 
@@ -30,6 +31,11 @@ const router = createBrowserRouter([
       {
         path: "/playlist/:id",
         element: <Playlist />,
+      },
+      {
+        path: "/queue",
+        element: <Queue />,
+        errorElement: <ErrorPage />,
       },
     ],
   },

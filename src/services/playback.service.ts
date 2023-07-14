@@ -1,4 +1,24 @@
-import { CurrentlyPlaying, Devices, Episode, Track } from "../types/spotify";
+import {
+  CurrentlyPlaying,
+  Devices,
+  Episode,
+  Track,
+  UsersQueueResponse,
+} from "../types/spotify";
+
+export async function getPlaybackQueue() {
+  const response = await fetch("https://api.spotify.com/v1/me/player/queue", {
+    headers: {
+      Authorization: `Bearer ${document.cookie.split("access_token=")[1]}`,
+    },
+  });
+  if (!response.ok) {
+    throw new Error(
+      "Network response to/from 'http://localhost:3000' was not ok"
+    );
+  }
+  return response.json() as Promise<UsersQueueResponse>;
+}
 
 export async function getPlaybackState() {
   const response = await fetch(
@@ -127,6 +147,7 @@ export const playContext = ({
 
 export const playbackService = {
   playbackState: { key: "playback-state", fn: getPlaybackState },
+  playbackQueue: { key: "playback-queue", fn: getPlaybackQueue },
   play: {
     contextKey: "context-",
     contextFn: playContext,
