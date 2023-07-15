@@ -44,12 +44,12 @@ function Home() {
         className={`grid h-screen w-screen grid-cols-appLayout grid-rows-1 relative`}
       >
         <div
-          className={`relative rounded-md bg-transparent resize-x min-w-[250px] max-w-[450px] overflow-x-auto`}
+          className={`relative rounded-md bg-transparent resize-x  w-[280px] max-w-[500px] overflow-x-auto`}
         >
           <Sidebar />
         </div>
         <div
-          className={`bg-gradient-to-tr from-grack-900 to-black relative overflow-x-auto border-l-[1px] border-grack-800`}
+          className={`bg-gradient-to-tr from-grack-900 to-black relative overflow-x-auto border-l-[1px] border-grack-800 min-w-[550px]`}
         >
           <Header />
           {location.pathname === "/" && (
@@ -64,7 +64,7 @@ function Home() {
                       key={item.id}
                       title={item.artists[0].name}
                       subtitle={item.name}
-                      image={item?.album?.images[1].url}
+                      image={item?.album?.images[1]?.url}
                     />
                   );
                 })}

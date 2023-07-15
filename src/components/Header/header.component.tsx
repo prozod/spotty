@@ -1,6 +1,8 @@
 import { Avatar, Menu } from "@mantine/core";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
+import { AiFillGithub } from "react-icons/ai";
+import { BiSolidMagicWand } from "react-icons/bi";
 import {
   BsArrowDownCircle,
   BsChevronLeft,
@@ -78,12 +80,36 @@ function Header() {
           </div>
         </form>
       </div>
-      <div className="flex gap-4 items-center">
+      <div className="flex gap-2 items-center">
+        <button
+          aria-label="Spotify Tools"
+          className="bg-black/50 rounded-full hidden xl:block"
+          onClick={() => {
+            alert("Coming soon!");
+          }}
+        >
+          <Link
+            to="#" // --> /tools
+            className="text-transparent bg-clip-text bg-opacity-50 flex items-center gap-2 px-4 py-2 text-sm rounded-full active:scale-95 font-extrabold bg-gradient-to-br from-lime-400 to-lime-200"
+          >
+            <BiSolidMagicWand size={20} className="text-lime-400" />
+            Spotty Tools
+          </Link>
+        </button>
+        <a
+          href="https://github.com"
+          target="_blank"
+          rel="noreferrer"
+          className="items-center gap-2 px-4 py-2 text-sm font-semibold rounded-full bg-black/50 active:scale-95 hidden lg:flex"
+        >
+          <AiFillGithub size={20} />
+          Source code
+        </a>
         <a
           href="https://www.spotify.com/download"
           target="_blank"
           rel="noreferrer"
-          className="flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-full bg-black/50 active:scale-95"
+          className="items-center gap-2 px-4 py-2 text-sm font-semibold rounded-full bg-black/50 active:scale-95 hidden lg:flex"
         >
           <BsArrowDownCircle size={20} />
           Install App
@@ -91,7 +117,7 @@ function Header() {
         <Menu shadow="md" width={200} offset={10}>
           <Menu.Target>
             <Avatar
-              src={data?.images[0].url}
+              src={data?.images[0]?.url}
               alt={data?.display_name}
               color="darkgreen"
               size="md"
@@ -101,7 +127,7 @@ function Header() {
               {data?.display_name.substring(0, 2).toUpperCase()}
             </Avatar>
           </Menu.Target>
-          <Menu.Dropdown className="bg-grack-800 border-[1px] border-solid border-grack-700">
+          <Menu.Dropdown className="bg-grack-800 border-[2px] border-solid border-grack-700">
             <Menu.Item
               rightSection={<LuExternalLink />}
               className="text-white hover:bg-grack-600"

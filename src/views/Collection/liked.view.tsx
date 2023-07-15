@@ -1,17 +1,23 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { BsPauseFill, BsPlayFill, BsSearch } from "react-icons/bs";
 import { FiChevronDown } from "react-icons/fi";
 import { RxHeartFilled } from "react-icons/rx";
+import { useLocation } from "react-router-dom";
 import { shallow } from "zustand/shallow";
 import PlaylistItem from "../../components/Playlist/playlistitem.component";
 import Skeleton from "../../components/Skeleton/skeleton.component";
+import { pausePlaying, playbackService } from "../../services/playback.service";
 import { trackService } from "../../services/track.service";
 import usePlaybackStore from "../../store/playback.store";
 import useUserStore from "../../store/user.store";
 import { PlaylistTrack } from "../../types/spotify";
 
 export default function CollectionLiked() {
-  const [playback] = usePlaybackStore((state) => [state.playback], shallow);
+  const location = useLocation();
+  const [playback, player, device_id] = usePlaybackStore(
+    (state) => [state.playback, state.player, state.device_id],
+    shallow
+  );
   const [loggedIn, currentUser] = useUserStore(
     (state) => [state.loggedIn, state.currentUser],
     shallow
@@ -24,6 +30,8 @@ export default function CollectionLiked() {
       enabled: loggedIn,
     }
   );
+
+  const pause = useMutation({ mutationFn: () => pausePlaying() });
 
   return (
     <section className="absolute top-0 flex flex-col bg-black">
@@ -49,7 +57,7 @@ export default function CollectionLiked() {
                 ) : (
                   <>
                     <img
-                      src={currentUser?.images[0].url}
+                      src={currentUser?.images[0]?.url}
                       alt={currentUser?.name}
                       height={16}
                       width={16}
@@ -67,25 +75,39 @@ export default function CollectionLiked() {
       )}
       <aside className="relative flex w-full items-center justify-between px-8 py-4 ">
         <div className="absolute inset-0 h-[350px] w-full bg-gradient-to-b from-indigo-500/20 to-black"></div>
-        <div className="flex">
-          <span
-            className="z-10 h-fit w-fit cursor-pointer rounded-full bg-green-400"
-            // onClick={() => {}}
-          >
-            {playback?.context?.uri ===
-              `spotify:user:${currentUser?.id}:collection` &&
-            playback?.is_playing ? (
-              <button className="px-6  py-1 justify-center items-center flex leading-4 text-xs font-semibold text-black">
-                <BsPauseFill size={22} className="text-gray-800" />
-                Pause
-              </button>
-            ) : (
-              <button className="px-6 py-1 justify-center items-center flex leading-4 text-xs font-semibold  text-black">
-                <BsPlayFill size={22} className="text-gray-800" />
-                Play
-              </button>
-            )}
-          </span>
+        <div className="flex items-center">
+          {playback?.context?.uri ===
+            `spotify:user:${currentUser?.id}:collection` &&
+          playback?.is_playing ? (
+            <button
+              className="bg-spotify rounded-full px-6 py-1 justify-center items-center flex  text-xs font-semibold  text-black z-10"
+              onClick={() => pause.mutate()}
+            >
+              <BsPauseFill size={22} className="text-gray-800" />
+              Pause
+            </button>
+          ) : (
+            <button
+              className="bg-spotify rounded-full px-6 py-1 justify-center items-center flex  text-xs font-semibold  text-black z-10"
+              onClick={() => {
+                if (
+                  !playback?.context?.uri &&
+                  location?.pathname === "/collection/liked"
+                ) {
+                  playbackService.play.contextFn({
+                    device_id: device_id,
+                    context_uri: `spotify:user:${currentUser.id}:collection`,
+                    offset: 0,
+                  });
+                } else {
+                  player.togglePlay();
+                }
+              }}
+            >
+              <BsPlayFill size={22} className="text-gray-800" />
+              Play
+            </button>
+          )}
         </div>
         <div className="z-10 flex items-center gap-4">
           <BsSearch className="text-gray-400" size={20} />

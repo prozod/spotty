@@ -4,8 +4,10 @@ import { shallow } from "zustand/shallow";
 import { playbackService } from "../../services/playback.service";
 import usePlaybackStore from "../../store/playback.store";
 import { WebPlaybackStateObject } from "../../types/spotify";
+import useUnauthorizedState from "../../utils/useUnauthorizedState";
 
 function WebPlayback() {
+  useUnauthorizedState();
   const queryClient = useQueryClient();
   const [
     updateWebSDKPlayback,

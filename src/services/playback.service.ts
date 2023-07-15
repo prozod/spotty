@@ -6,7 +6,7 @@ import {
   UsersQueueResponse,
 } from "../types/spotify";
 
-export async function getPlaybackQueue() {
+export const getPlaybackQueue = async () => {
   const response = await fetch("https://api.spotify.com/v1/me/player/queue", {
     headers: {
       Authorization: `Bearer ${document.cookie.split("access_token=")[1]}`,
@@ -18,9 +18,9 @@ export async function getPlaybackQueue() {
     );
   }
   return response.json() as Promise<UsersQueueResponse>;
-}
+};
 
-export async function getPlaybackState() {
+export const getPlaybackState = async () => {
   const response = await fetch(
     "https://api.spotify.com/v1/me/player?additional_types=episode",
     {
@@ -35,9 +35,9 @@ export async function getPlaybackState() {
     );
   }
   return response.json() as Promise<CurrentlyPlaying<Track | Episode>>;
-}
+};
 
-export async function getDevices() {
+export const getDevices = async () => {
   const response = await fetch("https://api.spotify.com/v1/me/player/devices", {
     headers: {
       Authorization: `Bearer ${document.cookie.split("access_token=")[1]}`,
@@ -49,7 +49,7 @@ export async function getDevices() {
     );
   }
   return response.json() as Promise<Devices>;
-}
+};
 
 export const transferPlayback = async ({
   device_id,
@@ -87,7 +87,17 @@ export const toggleShuffle = async ({
   });
 };
 
-export const playSong = ({
+export const pausePlaying = async () => {
+  return fetch(`https://api.spotify.com/v1/me/player/pause`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${document.cookie.split("access_token=")[1]}`,
+    },
+  });
+};
+
+export const playSong = async ({
   spotify_uri,
   device_id,
   position_ms,
@@ -113,7 +123,7 @@ export const playSong = ({
     }
   );
 };
-export const playContext = ({
+export const playContext = async ({
   offset,
   device_id,
   context_uri,

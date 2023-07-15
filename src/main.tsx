@@ -9,8 +9,8 @@ import CollectionLiked from "./views/Collection/liked.view";
 import Playlist from "./views/Collection/playlist.view";
 import Home from "./views/Home/home.view";
 import Login from "./views/Login/login.view";
-import Search from "./views/Search/search.view";
 import Queue from "./views/Queue/queue.view";
+import Search from "./views/Search/search.view";
 
 const queryClient = new QueryClient();
 
@@ -48,11 +48,11 @@ const router = createBrowserRouter([
 
 ReactDOM.render(
   <React.StrictMode>
-    <MantineProvider withNormalizeCSS>
-      <QueryClientProvider client={queryClient}>
+    <QueryClientProvider client={queryClient}>
+      <MantineProvider withNormalizeCSS>
         <RouterProvider router={router} />
-      </QueryClientProvider>
-    </MantineProvider>
+      </MantineProvider>
+    </QueryClientProvider>
   </React.StrictMode>,
   document.getElementById("root")
 );

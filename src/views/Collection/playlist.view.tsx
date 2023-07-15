@@ -1,6 +1,5 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { FaPause, FaPlay } from "react-icons/fa";
 import { FiChevronDown, FiSearch } from "react-icons/fi";
 import { useLocation } from "react-router-dom";
 import { shallow } from "zustand/shallow";
@@ -11,6 +10,8 @@ import usePlaybackStore from "../../store/playback.store";
 import usePlaylistStore from "../../store/playlist.store";
 import useUserStore from "../../store/user.store";
 import getDominantColor from "../../utils/dominantColor";
+import { BsPauseFill, BsPlayFill } from "react-icons/bs";
+import { pausePlaying, playbackService } from "../../services/playback.service";
 
 const numFormat = new Intl.NumberFormat("en-US");
 
@@ -18,7 +19,11 @@ function Playlist() {
   const location = useLocation();
   const playlistId = location?.pathname?.split("/")[2] as string;
   const [bgColor, setBgColor] = useState<number[] | null>(null);
-  const [loggedIn] = useUserStore((state) => [state.loggedIn], shallow);
+  const [loggedIn] = useUserStore(
+    (state) => [state.loggedIn, state.currentUser],
+    shallow
+  );
+  const pause = useMutation({ mutationFn: () => pausePlaying() });
 
   const {
     data: playlist,
@@ -29,7 +34,10 @@ function Playlist() {
     async () => playlistService.getPlaylist.fn({ id: playlistId }),
     { enabled: loggedIn }
   );
-  const [playback] = usePlaybackStore((state) => [state.playback], shallow);
+  const [playback, player, device_id] = usePlaybackStore(
+    (state) => [state.playback, state.player, state.device_id],
+    shallow
+  );
 
   useEffect(() => {
     usePlaylistStore.setState({ playlist: playlist });
@@ -90,43 +98,53 @@ function Playlist() {
               alt={(playlist?.owner?.display_name as string) || playlist?.id}
               width={250}
               height={250}
-              className="z-10 aspect-square h-auto rounded-md"
+              className="z-10 aspect-square object-cover h-auto rounded-md"
             />
           )}
-          <div className="z-10 flex h-[248px] grow flex-col justify-between gap-2 font-inter">
+          <div className="z-10 flex h-[248px] grow flex-col justify-between gap-2">
             <div className="my-auto flex flex-col justify-center">
               {playlist?.public ? (
                 <p className="text-xs ">PUBLIC PLAYLIST</p>
               ) : (
-                <p className="text-xs ">PRIVATE PLAYLIST</p>
+                <p className="text-xs ">
+                  {playlist?.owner.id === "spotify"
+                    ? "PUBLIC PLAYLIST"
+                    : "PRIVATE PLAYLIST"}
+                </p>
               )}
-              <h1 className="text-6xl font-extrabold">{playlist.name}</h1>
+              <h1 className="md:text-2xl lg:text-4xl xl:text-6xl font-extrabold mt-2">
+                {playlist.name}
+              </h1>
             </div>
             <div className="flex gap-2 flex-col">
               {playlist.description && (
-                <p className="text-sm opacity-60 max-w-[30vw]">
+                <p className="text-xs lg:text-sm opacity-60 max-w-[30vw]">
                   {playlist.description}
                 </p>
               )}
-              <div className="flex items-center gap-2 text-sm">
-                <img
-                  src={
-                    playlist?.owner?.images
-                      ? playlist?.owner?.images[0].url
-                      : "/spotty.ico"
-                  }
-                  height={16}
-                  width={16}
-                  className="rounded-full"
-                />
-                <p className="font-semibold">{playlist?.owner?.display_name}</p>
+              <div className="flex lg:items-center gap-2 text-sm flex-col lg:flex-row">
+                <div className="flex gap-2">
+                  <img
+                    src={
+                      playlist?.owner?.images
+                        ? playlist?.owner?.images[0]?.url
+                        : "/spotty.ico"
+                    }
+                    height={16}
+                    width={16}
+                    className="aspect-square rounded-full"
+                  />
+                  <p className="font-semibold">
+                    {playlist?.owner?.display_name}
+                  </p>
+                </div>
                 {playlist?.followers?.total > 0 && (
                   <>
-                    <span className="text-xs">•</span>
+                    <span className="text-xs hidden lg:block">•</span>
                     <p>{numFormat.format(playlist?.followers?.total)} likes</p>
                   </>
                 )}
-                <span className="text-xs">•</span>
+                <span className="text-xs hidden lg:block">•</span>
                 <p className="">{playlist?.tracks?.total} songs</p>
               </div>
             </div>
@@ -144,32 +162,37 @@ function Playlist() {
     )`,
           }}
         ></div>
-        <div className="flex">
-          <span
-            className="z-10 h-fit w-fit cursor-pointer rounded-full bg-green-400"
-            // onClick={() => {
-            //     playback?.context?.uri === playlist?.uri && playback?.is_playing
-            //         ? pauseSong.mutate()
-            //         : playContext({
-            //             access_token: accessToken!,
-            //             context_uri: playlist?.uri,
-            //             offset: 0,
-            //         });
-            // }}
-          >
-            {playback?.context?.uri === playlist?.uri &&
-            playback?.is_playing ? (
-              <button className="px-6 py-2 justify-center items-center flex leading-4 text-xs font-semibold gap-2 text-black">
-                <FaPause />
-                Pause
-              </button>
-            ) : (
-              <button className="px-6 py-2 justify-center items-center flex leading-4 text-xs font-semibold gap-2 text-black">
-                <FaPlay />
-                Play
-              </button>
-            )}
-          </span>
+        <div className="flex items-center">
+          {playback?.context?.uri === playlist?.uri && playback?.is_playing ? (
+            <button
+              className="bg-spotify rounded-full px-6 py-1 justify-center items-center flex  text-xs font-semibold  text-black z-10"
+              onClick={() => pause.mutate()}
+            >
+              <BsPauseFill size={22} className="text-gray-800" />
+              Pause
+            </button>
+          ) : (
+            <button
+              className="bg-spotify rounded-full px-6 py-1 justify-center items-center flex  text-xs font-semibold  text-black z-10"
+              onClick={() => {
+                if (
+                  playback?.context?.uri.split(":")[2] !==
+                  location.pathname.split("/")[2]
+                ) {
+                  playbackService.play.contextFn({
+                    device_id: device_id,
+                    context_uri: playlist?.uri,
+                    offset: 0,
+                  });
+                } else {
+                  player.togglePlay();
+                }
+              }}
+            >
+              <BsPlayFill size={22} className="text-gray-800" />
+              Play
+            </button>
+          )}
         </div>
         <div className="z-10 flex items-center gap-4">
           <FiSearch className="text-gray-400" size={20} />
@@ -186,9 +209,9 @@ function Playlist() {
         <div className="grid w-full grid-cols-playlist items-center px-4 py-2 font-inter text-sm opacity-60 transition-all hover:bg-white/10">
           <p className="col-start-1">#</p>
           <p className="col-start-2">Title</p>
-          <p className="col-start-3">Album</p>
-          <p className="col-start-4">Date added</p>
-          <p className="col-start-5">Length</p>
+          <p className="col-start-3 hidden lg:block">Album</p>
+          <p className="col-start-4 hidden lg:block">Date added</p>
+          <p className="col-start-5 text-right lg:text-left">Length</p>
         </div>
         <div className="mb-4 h-[1px] w-full bg-white/10"></div>
         {isLoading &&

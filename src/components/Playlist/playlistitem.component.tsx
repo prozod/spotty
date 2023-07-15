@@ -46,7 +46,10 @@ function PlaylistItem({
   const [playButton, setPlayButton] = useState<JSX.Element | number | string>(
     total || 0
   );
-  const [device_id] = usePlaybackStore((state) => [state.device_id], shallow);
+  const [device_id, player] = usePlaybackStore(
+    (state) => [state.device_id, state.player],
+    shallow
+  );
 
   const song =
     playlistItem && "track" in playlistItem ? playlistItem?.track : track;
@@ -92,7 +95,9 @@ function PlaylistItem({
   } else {
     return (
       <div
-        className="hover:cursor-pointer text-sm grid-cols-playlistMobile lg:grid-cols-playlist grid px-2 py-2 rounded-md hover:bg-white/10 items-center"
+        className={`hover:cursor-pointer text-sm grid-cols-playlistMobile lg:grid-cols-playlist grid px-2 py-2 rounded-md hover:bg-white/10 items-center ${
+          location.pathname === "/queue" && "hover:cursor-not-allowed"
+        }`}
         key={song?.uri}
         onMouseOver={() => {
           currentSongPlaying
@@ -114,7 +119,7 @@ function PlaylistItem({
       >
         <button
           className={`col-start-1 flex items-center justify-center cursor-pointer w-auto h-auto text-sm aspect-square transition-all ${
-            location.pathname === "/queue" && "cursor-not-allowed"
+            location.pathname === "/queue" && "hover:cursor-not-allowed"
           }`}
           data-id={song?.uri}
           data-track-index={total}
@@ -126,17 +131,16 @@ function PlaylistItem({
                 offset: Number(total) - 1,
               });
             }
-            // playbackService.play.songFn({
-            //   device_id: device_id,
-            //   spotify_uri: song?.uri,
-            // });
+            if (playback?.is_playing && playback?.item?.id === song?.id) {
+              player.togglePlay();
+            }
           }}
         >
           {playButton}
         </button>
         <div className="ml-2 flex items-center gap-3 w-full">
           <img
-            src={(song as Track)?.album?.images[1].url}
+            src={(song as Track)?.album?.images[1]?.url}
             alt={song?.name}
             width={40}
             height={40}

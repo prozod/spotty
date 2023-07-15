@@ -10,7 +10,6 @@ function Queue() {
     [playbackService.playbackQueue.key],
     playbackService.playbackQueue.fn
   );
-  console.log(playback);
 
   return (
     <main className="flex gap-4 flex-col py-4 px-6">

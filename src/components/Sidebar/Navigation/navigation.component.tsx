@@ -94,14 +94,14 @@ export default function Navigation() {
         </button>
         {libVisibility && (
           <>
-            <Link to="/recents">
+            <Link to="/collection/recent">
               <p
                 className={`relative flex items-center px-6 gap-4 text-sm font-semibold cursor-pointer ${
-                  location.pathname === "/recents"
+                  location.pathname === "/collection/recent"
                     ? "text-spotify font-bold opacity-100"
                     : "text-white opacity-70"
                 } hover:opacity-100 ${
-                  location.pathname === "/recents" &&
+                  location.pathname === "/collection/recent" &&
                   "before:content-[''] before:absolute before:left-0 before:h-[25px] before:w-[5px] before:bg-spotify"
                 }`}
               >

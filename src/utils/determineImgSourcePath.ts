@@ -5,10 +5,10 @@ export function determineImgSourcePath(
 ) {
   if (playback !== undefined) {
     if ("artists" in playback.item) {
-      return playback?.item?.album?.images[1].url;
+      return playback?.item?.album?.images[1]?.url;
     }
     if ("show" in playback.item) {
-      return playback?.item?.images[1].url;
+      return playback?.item?.images[1]?.url;
     }
   }
   return "";

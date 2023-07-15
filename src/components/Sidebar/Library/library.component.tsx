@@ -30,7 +30,7 @@ export default function Library() {
         </span>
       </div>
       <div className="h-[95%] rounded-md ml-3 overflow-y-scroll">
-        {data?.items?.map((playlist) => (
+        {data?.map((playlist) => (
           <Link
             to={`/playlist/${playlist.id}`}
             className={`flex items-center gap-4 px-2 py-2 text-white rounded-md hover:bg-white/10 group text-opacity-70 hover:text-opacity-100 mr-1 ${
@@ -38,13 +38,15 @@ export default function Library() {
             }`}
             key={playlist.id}
           >
-            <PiPlaylistFill
-              size={22}
-              className={`${
-                playlist.id === playback?.context?.uri.split(":")[2] &&
-                "text-spotify animate-pulse"
-              }`}
-            />
+            <div>
+              <PiPlaylistFill
+                size={22}
+                className={`flex-1${
+                  playlist.id === playback?.context?.uri.split(":")[2] &&
+                  "text-spotify animate-pulse"
+                } aspect-square`}
+              />
+            </div>
             <p
               className={`group-hover:text-opacity-100 group-hover:cursor-pointer truncate ${
                 playlist.id === playback?.context?.uri.split(":")[2] &&

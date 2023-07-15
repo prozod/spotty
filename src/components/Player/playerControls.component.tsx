@@ -7,6 +7,7 @@ import { GiSmartphone } from "react-icons/gi";
 import { IoVolumeHigh } from "react-icons/io5";
 import { LuLaptop2, LuSpeaker } from "react-icons/lu";
 import { PiQueueFill, PiWaveform } from "react-icons/pi";
+import { Link } from "react-router-dom";
 import { shallow } from "zustand/shallow";
 import {
   playbackService,
@@ -15,7 +16,6 @@ import {
 import usePlaybackStore from "../../store/playback.store";
 import useUserStore from "../../store/user.store";
 import { Device } from "../../types/spotify";
-import { Link } from "react-router-dom";
 
 function PlayerControls() {
   const [vol, setVol] = useState(0);
@@ -87,7 +87,8 @@ function PlayerControls() {
   }
 
   return (
-    <div className="flex items-center gap-4 justify-self-end">
+    <div className="flex items-center justify-self-end gap-4 leading-[10px]">
+      {/* ----- QUEUE ICON ----- */}
       <Link to="/queue">
         <button aria-label="Devices">
           <PiQueueFill
@@ -99,6 +100,7 @@ function PlayerControls() {
         </button>
       </Link>
 
+      {/* ----- DEVICES ICON ----- */}
       <Menu shadow="md" width={280}>
         <Menu.Target>
           <button
@@ -119,7 +121,6 @@ function PlayerControls() {
             />
           </button>
         </Menu.Target>
-
         <Menu.Dropdown className="p-4 bg-grack-800 border-[1px] shadow-md border-solid border-grack-700">
           <Menu.Item
             icon={<PiWaveform size={24} className="text-spotify" />}
@@ -156,6 +157,8 @@ function PlayerControls() {
           </a>
         </Menu.Dropdown>
       </Menu>
+
+      {/* ----- VOLUME ICON ----- */}
       <div className="flex gap-2 items-center">
         <IoVolumeHigh size={22} />
         <span
