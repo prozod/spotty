@@ -7,6 +7,7 @@ import usePlaybackStore from "../../store/playback.store";
 import useUserStore from "../../store/user.store";
 import { PlaylistTrack, Track } from "../../types/spotify";
 import millisToMinutesAndSeconds from "../../utils/msConversion";
+import Liked from "../Liked/liked.component";
 import Skeleton from "../Skeleton/skeleton.component";
 
 export const WavebarIcon = () => {
@@ -124,6 +125,16 @@ function PlaylistItem({
           data-id={song?.uri}
           data-track-index={total}
           onClick={() => {
+            console.warn(
+              "Playing:",
+              song?.name,
+              "ID:",
+              song?.id,
+              "Offset:",
+              Number(total) - 1,
+              "Playlist:",
+              currentContext
+            );
             if (location.pathname !== "/queue") {
               playbackService.play.contextFn({
                 device_id: device_id,
@@ -186,8 +197,18 @@ function PlaylistItem({
             }).format(Date.parse(playlistItem?.added_at as string))}
           </p>
         )}
-        <p className="col-start-5 cursor-default opacity-60">
-          {millisToMinutesAndSeconds(song?.duration_ms || 0)}
+        <p className="relative col-start-5 cursor-default flex gap-2 items-center">
+          <span className="absolute -left-10">
+            {location.pathname === "/collection/liked" && (
+              <Liked id={song?.id as string} />
+            )}
+            {location.pathname !== "/collection/liked" && (
+              <Liked id={song?.id as string} />
+            )}
+          </span>
+          <span className="opacity-60">
+            {millisToMinutesAndSeconds(song?.duration_ms || 0)}
+          </span>
         </p>
       </div>
     );

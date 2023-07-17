@@ -1,24 +1,31 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQueries,
+  useQuery,
+} from "@tanstack/react-query";
 import { useEffect, useState } from "react";
+import { BsPauseFill, BsPlayFill } from "react-icons/bs";
 import { FiChevronDown, FiSearch } from "react-icons/fi";
+import { useInView } from "react-intersection-observer";
 import { useLocation } from "react-router-dom";
 import { shallow } from "zustand/shallow";
 import PlaylistItem from "../../components/Playlist/playlistitem.component";
 import Skeleton from "../../components/Skeleton/skeleton.component";
-import { playlistService } from "../../services/playlist.service";
-import usePlaybackStore from "../../store/playback.store";
-import usePlaylistStore from "../../store/playlist.store";
-import useUserStore from "../../store/user.store";
-import getDominantColor from "../../utils/dominantColor";
-import { BsPauseFill, BsPlayFill } from "react-icons/bs";
 import { pausePlaying, playbackService } from "../../services/playback.service";
-
+import { playlistService } from "../../services/playlist.service";
+import { trackService } from "../../services/track.service";
+import usePlaybackStore from "../../store/playback.store";
+import useUserStore from "../../store/user.store";
+import { PlaylistTrack } from "../../types/spotify";
+import getDominantColor from "../../utils/dominantColor";
 const numFormat = new Intl.NumberFormat("en-US");
 
 function Playlist() {
   const location = useLocation();
   const playlistId = location?.pathname?.split("/")[2] as string;
   const [bgColor, setBgColor] = useState<number[] | null>(null);
+  const { ref, inView } = useInView();
   const [loggedIn] = useUserStore(
     (state) => [state.loggedIn, state.currentUser],
     shallow
@@ -30,18 +37,40 @@ function Playlist() {
     error,
     isLoading,
   } = useQuery(
-    [playlistService.getPlaylist.key.concat(playlistId)],
+    [playlistService.getPlaylist.key, playlistId],
     async () => playlistService.getPlaylist.fn({ id: playlistId }),
-    { enabled: loggedIn }
+    {
+      enabled: loggedIn,
+    }
   );
-  const [playback, player, device_id] = usePlaybackStore(
-    (state) => [state.playback, state.player, state.device_id],
+
+  const [playback, player, device_id, likedTracks] = usePlaybackStore(
+    (state) => [
+      state.playback,
+      state.player,
+      state.device_id,
+      state.likedTracks,
+      state.likes,
+    ],
     shallow
   );
 
+  const RETURN_LIMIT = 50;
+  const { data: tracks, fetchNextPage } = useInfiniteQuery(
+    [playlistService.getPlaylistTracks.key, playlistId],
+    async ({ pageParam = 0 }) =>
+      playlistService.getPlaylistTracks.fn(playlistId, RETURN_LIMIT, pageParam),
+    {
+      enabled: loggedIn,
+      getNextPageParam: (lastPage) => lastPage.offset + RETURN_LIMIT,
+    }
+  );
+
   useEffect(() => {
-    usePlaylistStore.setState({ playlist: playlist });
-  }, [playlist]);
+    if (inView) {
+      fetchNextPage();
+    }
+  }, [inView]);
 
   useEffect(() => {
     async function playlistHeaderBgColor() {
@@ -50,6 +79,50 @@ function Playlist() {
     }
     playlistHeaderBgColor();
   }, [playlist]);
+
+  const chunkSize = 50;
+  const ch: string[][] = [];
+
+  useEffect(() => {
+    tracks?.pages.map((page) => {
+      page?.items?.map((item: PlaylistTrack) =>
+        usePlaybackStore.setState((prev) => ({
+          likedTracks: new Map(prev.likedTracks).set(item?.track?.id, false),
+        }))
+      );
+    });
+  }, [tracks]);
+
+  for (let i = 0; i < Array.from(likedTracks.keys()).length; i += chunkSize) {
+    const chunk = Array.from(likedTracks.keys()).slice(i, i + chunkSize);
+    ch.push(chunk);
+  }
+
+  const likeQueries = useQueries({
+    queries: ch.map((_c, i) => {
+      return {
+        queryKey: [trackService.userLikedTracks.key, playlist?.id as string, i],
+        queryFn: () => trackService.userLikedTracks.fn(ch[i]),
+      };
+    }),
+  });
+
+  const allFinished = likeQueries.every((query) => query.isSuccess);
+
+  useEffect(() => {
+    if (allFinished) {
+      likeQueries?.map(async (query, idx) => {
+        for (let i = 0; i < chunkSize; i++) {
+          {
+            query?.data !== undefined;
+            usePlaybackStore.setState((prev) => ({
+              likes: new Map(prev.likes).set(ch[idx][i], query?.data[i]),
+            }));
+          }
+        }
+      });
+    }
+  }, [allFinished]);
 
   return (
     <section className="absolute top-0 flex flex-col bg-black">
@@ -85,14 +158,14 @@ function Playlist() {
       )}
       {playlist && (
         <div
-          key={playlist.id}
+          key={playlist?.id}
           className={`relative z-0 flex h-full  items-center gap-4 p-8 pt-24`}
           style={{
             backgroundColor: `rgb(${bgColor})`,
           }}
         >
           <div className="absolute inset-0 h-full w-full bg-gradient-to-t from-black/80 to-transparent"></div>
-          {playlist.images && (
+          {playlist?.images && (
             <img
               src={playlist?.images[0]?.url}
               alt={(playlist?.owner?.display_name as string) || playlist?.id}
@@ -113,13 +186,13 @@ function Playlist() {
                 </p>
               )}
               <h1 className="md:text-2xl lg:text-4xl xl:text-6xl font-extrabold mt-2">
-                {playlist.name}
+                {playlist?.name}
               </h1>
             </div>
             <div className="flex gap-2 flex-col">
-              {playlist.description && (
+              {playlist?.description && (
                 <p className="text-xs lg:text-sm opacity-60 max-w-[30vw]">
-                  {playlist.description}
+                  {playlist?.description}
                 </p>
               )}
               <div className="flex lg:items-center gap-2 text-sm flex-col lg:flex-row">
@@ -127,7 +200,7 @@ function Playlist() {
                   <img
                     src={
                       playlist?.owner?.images
-                        ? playlist?.owner?.images[0]?.url
+                        ? playlist?.images[0]?.url
                         : "/spotty.ico"
                     }
                     height={16}
@@ -219,24 +292,16 @@ function Playlist() {
             <PlaylistItem key={i + "z"} loading={isLoading} />
           ))}
 
-        {/*{tracks?.pages.map((page) =>
-                    page?.items?.map((track, i) => (
-                        <TableItem
-                            playlistContext={playlist}
-                            playlistItem={track as PlaylistTrack}
-                            key={track?.track?.id}
-                            total={page.offset + i + 1}
-                        />
-                    ))
-                )}*/}
-        {playlist?.tracks?.items?.map((track, i) => (
-          <PlaylistItem
-            playlistItem={track}
-            key={track?.track?.id}
-            total={i + 1}
-          />
-        ))}
-        {/*<span ref={ref} className="h-[1px] w-full bg-transparent"></span>*/}
+        {tracks?.pages.map((page) =>
+          page?.items?.map((track: PlaylistTrack, i: number) => (
+            <PlaylistItem
+              playlistItem={track}
+              key={track?.track?.id}
+              total={page.offset + i + 1}
+            />
+          ))
+        )}
+        <span ref={ref} className="h-[1px] w-full bg-transparent"></span>
       </div>
     </section>
   );

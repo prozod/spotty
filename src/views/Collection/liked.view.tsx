@@ -1,7 +1,9 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useMutation } from "@tanstack/react-query";
+import { useEffect } from "react";
 import { BsPauseFill, BsPlayFill, BsSearch } from "react-icons/bs";
 import { FiChevronDown } from "react-icons/fi";
 import { RxHeartFilled } from "react-icons/rx";
+import { useInView } from "react-intersection-observer";
 import { useLocation } from "react-router-dom";
 import { shallow } from "zustand/shallow";
 import PlaylistItem from "../../components/Playlist/playlistitem.component";
@@ -14,6 +16,7 @@ import { PlaylistTrack } from "../../types/spotify";
 
 export default function CollectionLiked() {
   const location = useLocation();
+  const { ref, inView } = useInView();
   const [playback, player, device_id] = usePlaybackStore(
     (state) => [state.playback, state.player, state.device_id],
     shallow
@@ -23,13 +26,22 @@ export default function CollectionLiked() {
     shallow
   );
 
-  const { data, isLoading, error } = useQuery(
+  const RETURN_LIMIT = 50;
+  const { data, isLoading, error, fetchNextPage } = useInfiniteQuery(
     [trackService.userSavedTracks.key],
-    trackService.userSavedTracks.fn,
+    async ({ pageParam = 0 }) =>
+      trackService.userSavedTracks.fn(RETURN_LIMIT, pageParam),
     {
       enabled: loggedIn,
+      getNextPageParam: (lastPage) => lastPage.offset + RETURN_LIMIT,
     }
   );
+
+  useEffect(() => {
+    if (inView) {
+      fetchNextPage();
+    }
+  }, [inView]);
 
   const pause = useMutation({ mutationFn: () => pausePlaying() });
 
@@ -65,7 +77,7 @@ export default function CollectionLiked() {
                     />
                     <p className="font-semibold">{currentUser?.display_name}</p>
                     <span className="text-xs">•</span>
-                    <p className="">{data?.total} songs</p>
+                    <p className="">{data?.pages[0]?.total} songs</p>
                   </>
                 )}
               </div>
@@ -123,7 +135,7 @@ export default function CollectionLiked() {
       <div className="z-10 mx-8 mb-2 bg-transparent">
         <div className="grid w-full grid-cols-playlistMobile lg:grid-cols-playlist items-center px-4 py-2 text-sm opacity-60 transition-all hover:bg-white/10">
           <p className="col-start-1">#</p>
-          <p className="col-start-2 col-span-2">Title</p>
+          <p className="col-start-2">Title</p>
           <p className="hidden lg:block col-start-3">Album</p>
           <p className="hidden lg:block col-start-4">Date added</p>
           <p className="col-start-5">Length</p>
@@ -133,13 +145,18 @@ export default function CollectionLiked() {
           Array.from({ length: 15 }, (_, i) => (
             <PlaylistItem key={i + "z"} loading={isLoading} />
           ))}
-        {(data?.items as PlaylistTrack[])?.map((track, i) => (
-          <PlaylistItem
-            playlistItem={track as PlaylistTrack}
-            key={track?.track?.id}
-            total={data?.offset + i + 1}
-          />
-        ))}
+        {data?.pages?.map((page) => {
+          return page?.items.map((item: PlaylistTrack, i: number) => {
+            return (
+              <PlaylistItem
+                playlistItem={item}
+                key={item?.track?.id}
+                total={page?.offset + i + 1}
+              />
+            );
+          });
+        })}
+        <span ref={ref} className="h-[50px] w-full bg-red-200"></span>
       </div>
     </section>
   );

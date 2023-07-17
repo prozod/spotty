@@ -6,13 +6,14 @@ import { shallow } from "zustand/shallow";
 import { playlistService } from "../../../services/playlist.service";
 import usePlaybackStore from "../../../store/playback.store";
 import useUserStore from "../../../store/user.store";
+import { Loader } from "@mantine/core";
 
 export default function Library() {
   const location = useLocation();
   const visitedPlaylistId = location?.pathname?.split("/")[2] as string;
   const [playback] = usePlaybackStore((state) => [state.playback], shallow);
   const [loggedIn] = useUserStore((state) => [state.loggedIn], shallow);
-  const { data } = useQuery(
+  const { data, isLoading, error } = useQuery(
     [playlistService.currentUserPlaylists.key],
     playlistService.currentUserPlaylists.fn,
     { enabled: loggedIn }
@@ -30,6 +31,19 @@ export default function Library() {
         </span>
       </div>
       <div className="h-[95%] rounded-md ml-3 overflow-y-scroll">
+        {error && (
+          <div className="w-full flex items-center justify-center my-8 flex-col gap-2">
+            <p>
+              Error getting playlists, <br /> please refresh!
+            </p>
+          </div>
+        )}
+        {isLoading && (
+          <div className="w-full flex items-center justify-center my-8 flex-col gap-2">
+            Fetching playlists...
+            <Loader color="#1ed760" variant="bars" />
+          </div>
+        )}
         {data?.map((playlist) => (
           <Link
             to={`/playlist/${playlist.id}`}

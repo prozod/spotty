@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { shallow } from "zustand/shallow";
 import usePlaybackStore from "../../store/playback.store";
 import { determineImgSourcePath } from "../../utils/determineImgSourcePath";
-import { AiFillHeart, AiOutlineHeart } from "react-icons/ai";
+import Liked from "../Liked/liked.component";
 
 function PlayerTile() {
   const [marqueeTrigger, setMarqueeTrigger] = useState<boolean>(false);
@@ -76,14 +76,9 @@ function PlayerTile() {
               )}
           </p>
         </div>
-        <AiFillHeart
-          className="text-spotify cursor-pointer hover:text-white transition-all"
-          size={22}
-        />
-        <AiOutlineHeart
-          size={22}
-          className="hover:text-spotify transition-all cursor-pointer"
-        />
+        {playback !== undefined && playback?.is_playing && (
+          <Liked id={playback?.item?.id as string} />
+        )}
       </div>
     </div>
   );

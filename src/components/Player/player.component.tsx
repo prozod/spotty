@@ -3,14 +3,14 @@ import { useEffect } from "react";
 import { shallow } from "zustand/shallow";
 import { playbackService } from "../../services/playback.service";
 import usePlaybackStore from "../../store/playback.store";
+import useUserStore from "../../store/user.store";
 import PlayerBar from "./playerBar.component";
 import PlayerControls from "./playerControls.component";
 import PlayerTile from "./playerTile.component";
-import useUserStore from "../../store/user.store";
 
 function Player() {
   const [updatePlaybackState] = usePlaybackStore(
-    (state) => [state.updatePlaybackState],
+    (state) => [state.updatePlaybackState, state.playback],
     shallow
   );
   const [loggedIn] = useUserStore((state) => [state.loggedIn], shallow);

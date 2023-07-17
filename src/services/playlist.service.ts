@@ -37,6 +37,27 @@ export async function getCurrentUserPlaylists() {
   return playlistsArr;
 }
 
+export async function getPlaylistTracks(
+  id: string,
+  limit: number,
+  offset: number
+) {
+  const response = await fetch(
+    `https://api.spotify.com/v1/playlists/${id}/tracks?limit=${limit}&offset=${offset}`,
+    {
+      headers: {
+        Authorization: `Bearer ${document.cookie.split("access_token=")[1]}`,
+      },
+    }
+  );
+  if (!response.ok) {
+    throw new Error(
+      "Network response to/from 'http://localhost:3000' was not ok"
+    );
+  }
+  return response.json();
+}
+
 export async function getPlaylist({ id }: { id: string }) {
   const response = await fetch(`https://api.spotify.com/v1/playlists/${id}`, {
     headers: {
@@ -55,6 +76,10 @@ export const playlistService = {
   currentUserPlaylists: {
     key: "current-user-playlists",
     fn: getCurrentUserPlaylists,
+  },
+  getPlaylistTracks: {
+    key: "playlist-tracks-",
+    fn: getPlaylistTracks,
   },
   getPlaylist: {
     key: "playlist-",

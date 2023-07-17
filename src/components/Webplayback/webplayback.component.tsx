@@ -2,6 +2,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { shallow } from "zustand/shallow";
 import { playbackService } from "../../services/playback.service";
+import { trackService } from "../../services/track.service";
 import usePlaybackStore from "../../store/playback.store";
 import { WebPlaybackStateObject } from "../../types/spotify";
 import useUnauthorizedState from "../../utils/useUnauthorizedState";

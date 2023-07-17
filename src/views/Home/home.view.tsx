@@ -1,3 +1,4 @@
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { Outlet, useLocation } from "react-router-dom";
@@ -39,6 +40,7 @@ function Home() {
 
   return (
     <>
+      <ReactQueryDevtools initialIsOpen={false} />
       <WebPlayback />
       <main
         className={`grid h-screen w-screen grid-cols-appLayout grid-rows-1 relative`}
