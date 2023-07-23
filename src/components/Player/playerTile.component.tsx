@@ -48,7 +48,7 @@ function PlayerTile() {
           </p>
 
           <p className="line-clamp-1">
-            {playback !== undefined &&
+            {playback &&
               playback?.currently_playing_type === "track" &&
               "artists" in playback.item &&
               playback?.item?.artists.map((artist, i) => (
@@ -64,19 +64,18 @@ function PlayerTile() {
                 </Link>
               ))}
 
-            {playback !== undefined &&
-              playback?.currently_playing_type === "episode" && (
-                <Link
-                  to={`/show/${playback?.item?.id}`}
-                  className="hover:underline cursor-pointer hover:text-white text-gray-400"
-                  key={playback?.item?.uri}
-                >
-                  {"show" in playback.item && playback?.item?.show?.name}
-                </Link>
-              )}
+            {playback && playback?.currently_playing_type === "episode" && (
+              <Link
+                to={`/show/${playback?.item?.id}`}
+                className="hover:underline cursor-pointer hover:text-white text-gray-400"
+                key={playback?.item?.uri}
+              >
+                {"show" in playback.item && playback?.item?.show?.name}
+              </Link>
+            )}
           </p>
         </div>
-        {playback !== undefined && playback?.is_playing && (
+        {playback && playback?.is_playing && (
           <Liked id={playback?.item?.id as string} />
         )}
       </div>

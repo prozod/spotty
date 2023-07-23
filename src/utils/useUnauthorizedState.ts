@@ -2,9 +2,11 @@ import { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { shallow } from "zustand/shallow";
 import useUserStore from "../store/user.store";
+import { useQueryClient } from "@tanstack/react-query";
 
 function useUnauthorizedState() {
   const location = useLocation();
+  const queryClient = useQueryClient();
   const navigate = useNavigate();
   const token = document.cookie.split("access_token=")[1];
   const [updateAccessToken, updateLoginState] = useUserStore(
@@ -23,6 +25,7 @@ function useUnauthorizedState() {
         `SPOTIFY RECONSTRUCTED: Your access token might be invalid, either way, you're not allowed to visit '${location}'. Please try logging in again.`
       );
       navigate("/login");
+      queryClient.invalidateQueries();
     }
 
     if (location.pathname === "/login" && token) {

@@ -19,6 +19,7 @@ import usePlaybackStore from "../../store/playback.store";
 import useUserStore from "../../store/user.store";
 import { PlaylistTrack } from "../../types/spotify";
 import getDominantColor from "../../utils/dominantColor";
+import useDetermineLiked from "../../utils/useDetermineLiked";
 const numFormat = new Intl.NumberFormat("en-US");
 
 function Playlist() {
@@ -79,50 +80,51 @@ function Playlist() {
     }
     playlistHeaderBgColor();
   }, [playlist]);
+  useDetermineLiked(tracks, playlist);
 
-  const chunkSize = 50;
-  const ch: string[][] = [];
+  // const chunkSize = 50;
+  // const ch: string[][] = [];
 
-  useEffect(() => {
-    tracks?.pages.map((page) => {
-      page?.items?.map((item: PlaylistTrack) =>
-        usePlaybackStore.setState((prev) => ({
-          likedTracks: new Map(prev.likedTracks).set(item?.track?.id, false),
-        }))
-      );
-    });
-  }, [tracks]);
+  // useEffect(() => {
+  //   tracks?.pages.map((page) => {
+  //     page?.items?.map((item: PlaylistTrack) =>
+  //       usePlaybackStore.setState((prev) => ({
+  //         likedTracks: new Map(prev.likedTracks).set(item?.track?.id, false),
+  //       }))
+  //     );
+  //   });
+  // }, [tracks]);
 
-  for (let i = 0; i < Array.from(likedTracks.keys()).length; i += chunkSize) {
-    const chunk = Array.from(likedTracks.keys()).slice(i, i + chunkSize);
-    ch.push(chunk);
-  }
+  // for (let i = 0; i < Array.from(likedTracks.keys()).length; i += chunkSize) {
+  //   const chunk = Array.from(likedTracks.keys()).slice(i, i + chunkSize);
+  //   ch.push(chunk);
+  // }
 
-  const likeQueries = useQueries({
-    queries: ch.map((_c, i) => {
-      return {
-        queryKey: [trackService.userLikedTracks.key, playlist?.id as string, i],
-        queryFn: () => trackService.userLikedTracks.fn(ch[i]),
-      };
-    }),
-  });
+  // const likeQueries = useQueries({
+  //   queries: ch.map((_c, i) => {
+  //     return {
+  //       queryKey: [trackService.userLikedTracks.key, playlist?.id as string, i],
+  //       queryFn: () => trackService.userLikedTracks.fn(ch[i]),
+  //     };
+  //   }),
+  // });
 
-  const allFinished = likeQueries.every((query) => query.isSuccess);
+  // const allFinished = likeQueries.every((query) => query.isSuccess);
 
-  useEffect(() => {
-    if (allFinished) {
-      likeQueries?.map(async (query, idx) => {
-        for (let i = 0; i < chunkSize; i++) {
-          {
-            query?.data !== undefined;
-            usePlaybackStore.setState((prev) => ({
-              likes: new Map(prev.likes).set(ch[idx][i], query?.data[i]),
-            }));
-          }
-        }
-      });
-    }
-  }, [allFinished]);
+  // useEffect(() => {
+  //   if (allFinished) {
+  //     likeQueries?.map(async (query, idx) => {
+  //       for (let i = 0; i < chunkSize; i++) {
+  //         {
+  //           query?.data !== undefined;
+  //           usePlaybackStore.setState((prev) => ({
+  //             likes: new Map(prev.likes).set(ch[idx][i], query?.data[i]),
+  //           }));
+  //         }
+  //       }
+  //     });
+  //   }
+  // }, [allFinished]);
 
   return (
     <section className="absolute top-0 flex flex-col bg-black">
