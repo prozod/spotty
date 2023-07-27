@@ -1,5 +1,5 @@
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { useQuery } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { useEffect } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import { shallow } from "zustand/shallow";

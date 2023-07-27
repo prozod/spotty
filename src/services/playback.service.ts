@@ -13,9 +13,7 @@ export const getPlaybackQueue = async () => {
     },
   });
   if (!response.ok) {
-    throw new Error(
-      "Network response to/from 'http://localhost:3000' was not ok"
-    );
+    throw new Error("Network response to/from Spotty Backend was not ok");
   }
   return response.json() as Promise<UsersQueueResponse>;
 };
@@ -30,9 +28,7 @@ export const getPlaybackState = async () => {
     }
   );
   if (!response.ok) {
-    throw new Error(
-      "Network response to/from 'http://localhost:3000' was not ok"
-    );
+    throw new Error("Network response to/from Spotty Backend was not ok");
   }
   return response.json() as Promise<CurrentlyPlaying<Track | Episode>>;
 };
@@ -44,9 +40,7 @@ export const getDevices = async () => {
     },
   });
   if (!response.ok) {
-    throw new Error(
-      "Network response to/from 'http://localhost:3000' was not ok"
-    );
+    throw new Error("Network response to/from Spotty Backend was not ok");
   }
   return response.json() as Promise<Devices>;
 };

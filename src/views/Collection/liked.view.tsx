@@ -13,6 +13,7 @@ import { trackService } from "../../services/track.service";
 import usePlaybackStore from "../../store/playback.store";
 import useUserStore from "../../store/user.store";
 import { PlaylistTrack } from "../../types/spotify";
+import useDetermineLiked from "../../utils/useDetermineLiked";
 
 export default function CollectionLiked() {
   const location = useLocation();
@@ -32,10 +33,17 @@ export default function CollectionLiked() {
     async ({ pageParam = 0 }) =>
       trackService.userSavedTracks.fn(RETURN_LIMIT, pageParam),
     {
+      refetchOnMount: "always",
       enabled: loggedIn,
       getNextPageParam: (lastPage) => lastPage.offset + RETURN_LIMIT,
     }
   );
+
+  useDetermineLiked({
+    tracks: data,
+    playlistId: "likes",
+    triggerState: playback?.context?.uri ? true : false,
+  });
 
   useEffect(() => {
     if (inView) {

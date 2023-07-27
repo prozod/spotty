@@ -5,9 +5,7 @@ export async function getUserTopTracks() {
     },
   });
   if (!response.ok) {
-    throw new Error(
-      "Network response to/from 'http://localhost:3000' was not ok"
-    );
+    throw new Error("Network response to/from Spotty Backend was not ok");
   }
   return response.json();
 }
@@ -22,9 +20,7 @@ export async function getUserSavedTracks(limit: number, offset: number) {
     }
   );
   if (!response.ok) {
-    throw new Error(
-      "Network response to/from 'http://localhost:3000' was not ok"
-    );
+    throw new Error("Network response to/from Spotty Backend was not ok");
   }
   return response.json();
 }
@@ -39,9 +35,7 @@ export async function getUserLikedTracks(id: string[]) {
     }
   );
   if (!response.ok) {
-    throw new Error(
-      "Network response to/from 'http://localhost:3000' was not ok"
-    );
+    throw new Error("Network response to/from Spotty Backend was not ok");
   }
   return response.json();
 }
@@ -57,9 +51,7 @@ export async function deleteUserLikedTrack(id: string) {
     }
   );
   if (!response.ok) {
-    throw new Error(
-      "Network response to/from 'http://localhost:3000' was not ok"
-    );
+    throw new Error("Network response to/from Spotty Backend was not ok");
   }
   return response.json();
 }
@@ -75,9 +67,7 @@ export async function addUserLikedTrack(id: string) {
     }
   );
   if (!response.ok) {
-    throw new Error(
-      "Network response to/from 'http://localhost:3000' was not ok"
-    );
+    throw new Error("Network response to/from Spotty Backend was not ok");
   }
   return response.json();
 }

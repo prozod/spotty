@@ -2,7 +2,6 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { shallow } from "zustand/shallow";
 import { playbackService } from "../../services/playback.service";
-import { trackService } from "../../services/track.service";
 import usePlaybackStore from "../../store/playback.store";
 import { WebPlaybackStateObject } from "../../types/spotify";
 import useUnauthorizedState from "../../utils/useUnauthorizedState";
@@ -33,6 +32,7 @@ function WebPlayback() {
     document.body.appendChild(script);
 
     (window as any).onSpotifyWebPlaybackSDKReady = () => {
+      // @ts-expect-error - Spotify Webplayback SDK doesnt have a types
       const player = new window.Spotify.Player({
         name: "Spotty - Web Playback",
         getOAuthToken: (cb: any) => {
@@ -46,6 +46,7 @@ function WebPlayback() {
       player.addListener("ready", ({ device_id }: { device_id: string }) => {
         console.log("Ready with Device ID", device_id);
         queryClient.invalidateQueries([playbackService.devices.key]);
+        queryClient.refetchQueries([playbackService.devices.key]);
         updateDeviceId(device_id);
       });
 
@@ -55,6 +56,8 @@ function WebPlayback() {
           console.log("Device ID has gone offline", device_id);
           queryClient.invalidateQueries([playbackService.devices.key]);
           queryClient.invalidateQueries([playbackService.playbackState.key]);
+          queryClient.refetchQueries([playbackService.devices.key]);
+          queryClient.refetchQueries([playbackService.playbackState.key]);
         }
       );
 
@@ -69,6 +72,9 @@ function WebPlayback() {
           queryClient.invalidateQueries([playbackService.devices.key]);
           queryClient.invalidateQueries([playbackService.playbackState.key]);
           queryClient.invalidateQueries([playbackService.playbackQueue.key]);
+          queryClient.refetchQueries([playbackService.devices.key]);
+          queryClient.refetchQueries([playbackService.playbackState.key]);
+          queryClient.refetchQueries([playbackService.playbackQueue.key]);
 
           updateWebSDKPlayback(state);
 

@@ -1,9 +1,4 @@
-import {
-  useInfiniteQuery,
-  useMutation,
-  useQueries,
-  useQuery,
-} from "@tanstack/react-query";
+import { useInfiniteQuery, useMutation, useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { BsPauseFill, BsPlayFill } from "react-icons/bs";
 import { FiChevronDown, FiSearch } from "react-icons/fi";
@@ -14,7 +9,6 @@ import PlaylistItem from "../../components/Playlist/playlistitem.component";
 import Skeleton from "../../components/Skeleton/skeleton.component";
 import { pausePlaying, playbackService } from "../../services/playback.service";
 import { playlistService } from "../../services/playlist.service";
-import { trackService } from "../../services/track.service";
 import usePlaybackStore from "../../store/playback.store";
 import useUserStore from "../../store/user.store";
 import { PlaylistTrack } from "../../types/spotify";
@@ -45,7 +39,7 @@ function Playlist() {
     }
   );
 
-  const [playback, player, device_id, likedTracks] = usePlaybackStore(
+  const [playback, player, device_id] = usePlaybackStore(
     (state) => [
       state.playback,
       state.player,
@@ -80,51 +74,9 @@ function Playlist() {
     }
     playlistHeaderBgColor();
   }, [playlist]);
-  useDetermineLiked(tracks, playlist);
 
-  // const chunkSize = 50;
-  // const ch: string[][] = [];
-
-  // useEffect(() => {
-  //   tracks?.pages.map((page) => {
-  //     page?.items?.map((item: PlaylistTrack) =>
-  //       usePlaybackStore.setState((prev) => ({
-  //         likedTracks: new Map(prev.likedTracks).set(item?.track?.id, false),
-  //       }))
-  //     );
-  //   });
-  // }, [tracks]);
-
-  // for (let i = 0; i < Array.from(likedTracks.keys()).length; i += chunkSize) {
-  //   const chunk = Array.from(likedTracks.keys()).slice(i, i + chunkSize);
-  //   ch.push(chunk);
-  // }
-
-  // const likeQueries = useQueries({
-  //   queries: ch.map((_c, i) => {
-  //     return {
-  //       queryKey: [trackService.userLikedTracks.key, playlist?.id as string, i],
-  //       queryFn: () => trackService.userLikedTracks.fn(ch[i]),
-  //     };
-  //   }),
-  // });
-
-  // const allFinished = likeQueries.every((query) => query.isSuccess);
-
-  // useEffect(() => {
-  //   if (allFinished) {
-  //     likeQueries?.map(async (query, idx) => {
-  //       for (let i = 0; i < chunkSize; i++) {
-  //         {
-  //           query?.data !== undefined;
-  //           usePlaybackStore.setState((prev) => ({
-  //             likes: new Map(prev.likes).set(ch[idx][i], query?.data[i]),
-  //           }));
-  //         }
-  //       }
-  //     });
-  //   }
-  // }, [allFinished]);
+  // see which songs of the playlist are liked
+  useDetermineLiked({ tracks: tracks, playlistId: playlist?.id as string });
 
   return (
     <section className="absolute top-0 flex flex-col bg-black">

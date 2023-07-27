@@ -153,7 +153,9 @@ function Header() {
             <Menu.Item
               className="text-white hover:bg-grack-600"
               onClick={() =>
-                window.location.replace("http://localhost:3000/logout")
+                window.location.replace(
+                  `{${import.meta.env.dev.VITE_BE_URL}/logout}`
+                )
               }
             >
               Log out

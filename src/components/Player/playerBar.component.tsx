@@ -56,6 +56,7 @@ function PlayerBar() {
               queryClient.invalidateQueries([
                 playbackService.playbackState.key,
               ]);
+              queryClient.refetchQueries([playbackService.playbackState.key]);
             }}
           />
         ) : (
@@ -66,6 +67,7 @@ function PlayerBar() {
               queryClient.invalidateQueries([
                 playbackService.playbackState.key,
               ]);
+              queryClient.refetchQueries([playbackService.playbackState.key]);
             }}
           />
         )}

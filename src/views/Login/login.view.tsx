@@ -1,7 +1,9 @@
 import { FaGithub } from "react-icons/fa";
 import useUnauthorizedState from "../../utils/useUnauthorizedState";
+
 export default function Login() {
   useUnauthorizedState();
+  console.log(import.meta.env.MODE, import.meta.env.VITE_BE_URL);
   return (
     <div className="flex flex-col items-center justify-center w-screen h-screen text-white bg-gradient-to-t from-grack-900 to-grack-800">
       <button className="absolute top-0 right-0 flex items-center gap-2 px-4 py-2 m-8 font-mono text-xs font-bold bg-white rounded-md text-black/80">
@@ -16,7 +18,9 @@ export default function Login() {
         </p>
         <hr />
         <button
-          onClick={() => window.location.replace("http://localhost:3000/login")}
+          onClick={() =>
+            window.location.replace(`${import.meta.env.VITE_BE_URL}/login`)
+          }
           className="w-full py-4 font-semibold text-black rounded-full bg-spotify"
         >
           Log In

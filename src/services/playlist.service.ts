@@ -51,9 +51,7 @@ export async function getPlaylistTracks(
     }
   );
   if (!response.ok) {
-    throw new Error(
-      "Network response to/from 'http://localhost:3000' was not ok"
-    );
+    throw new Error("Network response to/from Spotty Backend was not ok");
   }
   return response.json();
 }
@@ -65,9 +63,7 @@ export async function getPlaylist({ id }: { id: string }) {
     },
   });
   if (!response.ok) {
-    throw new Error(
-      "Network response to/from 'http://localhost:3000' was not ok"
-    );
+    throw new Error("Network response to/from Spotty Backend was not ok");
   }
   return response.json() as Promise<Playlist>;
 }

@@ -118,3 +118,7 @@ export interface UserPlaylist {
   previous: null | number;
   total: number;
 }
+
+export interface UserPlaylistPaged {
+  pages: UserPlaylist[];
+}

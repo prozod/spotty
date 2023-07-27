@@ -199,12 +199,7 @@ function PlaylistItem({
         )}
         <p className="relative col-start-5 cursor-default flex gap-2 items-center">
           <span className="absolute -left-10">
-            {location.pathname === "/collection/liked" && (
-              <Liked id={song?.id as string} saved />
-            )}
-            {location.pathname !== "/collection/liked" && (
-              <Liked id={song?.id as string} />
-            )}
+            <Liked id={song?.id as string} />
           </span>
           <span className="opacity-60">
             {millisToMinutesAndSeconds(song?.duration_ms || 0)}

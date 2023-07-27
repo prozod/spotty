@@ -8,7 +8,7 @@ import {
 } from "../../services/track.service";
 import usePlaybackStore from "../../store/playback.store";
 
-function Liked({ id, saved }: { id: string; saved?: boolean }) {
+function Liked({ id }: { id: string }) {
   const [likes] = usePlaybackStore((state) => [state.likes, state.playback]);
   const queryClient = useQueryClient();
 
@@ -19,27 +19,6 @@ function Liked({ id, saved }: { id: string; saved?: boolean }) {
   const addLiked = useMutation({
     mutationFn: (id: string) => addUserLikedTrack(id),
   });
-
-  if (saved) {
-    return (
-      <AiFillHeart
-        className="text-spotify cursor-pointer hover:text-white transition-all"
-        size={20}
-        onClick={() => {
-          deleteLiked.mutate(id as string);
-          queryClient.invalidateQueries([trackService.userSavedTracks.key]);
-          queryClient.refetchQueries([trackService.userSavedTracks.key]);
-          queryClient.invalidateQueries([trackService.userLikedTracks.key]);
-          console.log("Deleted", id, "Invalidated", [
-            trackService.userSavedTracks.key,
-          ]);
-          usePlaybackStore.setState((prev) => ({
-            likes: new Map(prev.likes).set(id, false),
-          }));
-        }}
-      />
-    );
-  }
 
   return (
     <>
@@ -52,12 +31,11 @@ function Liked({ id, saved }: { id: string; saved?: boolean }) {
             queryClient.invalidateQueries([trackService.userSavedTracks.key]);
             queryClient.refetchQueries([trackService.userSavedTracks.key]);
             queryClient.invalidateQueries([
-              trackService.userLikedTracks.key,
-              id,
-            ]);
-            queryClient.invalidateQueries([
               playlistService.getPlaylistTracks.key,
             ]);
+            queryClient.refetchQueries([playlistService.getPlaylistTracks.key]);
+            queryClient.invalidateQueries([trackService.userLikedTracks.key]);
+            queryClient.refetchQueries([trackService.userLikedTracks.key]);
             usePlaybackStore.setState((prev) => ({
               likes: new Map(prev.likes).set(id, false),
             }));
@@ -71,13 +49,12 @@ function Liked({ id, saved }: { id: string; saved?: boolean }) {
             addLiked.mutate(id as string);
             queryClient.invalidateQueries([trackService.userSavedTracks.key]);
             queryClient.refetchQueries([trackService.userSavedTracks.key]);
-            queryClient.invalidateQueries([
-              trackService.userLikedTracks.key,
-              id,
-            ]);
+            queryClient.invalidateQueries([trackService.userLikedTracks.key]);
+            queryClient.refetchQueries([trackService.userLikedTracks.key]);
             queryClient.invalidateQueries([
               playlistService.getPlaylistTracks.key,
             ]);
+            queryClient.refetchQueries([playlistService.getPlaylistTracks.key]);
             usePlaybackStore.setState((prev) => ({
               likes: new Map(prev.likes).set(id, true),
             }));

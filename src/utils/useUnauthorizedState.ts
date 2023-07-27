@@ -1,8 +1,8 @@
+import { useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { shallow } from "zustand/shallow";
 import useUserStore from "../store/user.store";
-import { useQueryClient } from "@tanstack/react-query";
 
 function useUnauthorizedState() {
   const location = useLocation();
@@ -18,19 +18,21 @@ function useUnauthorizedState() {
     updateLoginState(token ? true : false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token]);
+  console.log("TOKEN useUnauthorizedState:", token);
 
   useEffect(() => {
     if (!token && location.pathname !== "/login") {
       console.warn(
-        `SPOTIFY RECONSTRUCTED: Your access token might be invalid, either way, you're not allowed to visit '${location}'. Please try logging in again.`
+        `SPOTIFY RECONSTRUCTED: Your access token might be invalid, either way, you're not allowed to visit '${location.pathname}'. Please try logging in again.`
       );
       navigate("/login");
       queryClient.invalidateQueries();
+      queryClient.cancelQueries();
     }
 
     if (location.pathname === "/login" && token) {
       console.warn(
-        `SPOTIFY RECONSTRUCTED: You are already logged in or an 'access_token' is already stored in your cookies, therefore accessing '${location}' is forbidden and you will be redirected.`
+        `SPOTIFY RECONSTRUCTED: You are already logged in or an 'access_token' is already stored in your cookies, therefore accessing '${location.pathname}' is forbidden and you will be redirected.`
       );
       navigate("/");
     }

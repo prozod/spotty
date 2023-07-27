@@ -5,9 +5,7 @@ export async function getUserCredentials() {
     },
   });
   if (!response.ok) {
-    throw new Error(
-      "Network response to/from 'http://localhost:3000' was not ok"
-    );
+    throw new Error("Network response to/from Spotty Backend was not ok");
   }
   return response.json();
 }
