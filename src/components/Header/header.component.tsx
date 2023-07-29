@@ -152,9 +152,13 @@ function Header() {
             </Menu.Item>
             <Menu.Item
               className="text-white hover:bg-grack-600"
-              onClick={() =>
-                window.location.replace(`${import.meta.env.VITE_BE_URL}/logout`)
-              }
+              onClick={() => {
+                document.cookie =
+                  "access_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC";
+                window.location.replace(
+                  `${import.meta.env.VITE_BE_URL}/logout`
+                );
+              }}
             >
               Log out
             </Menu.Item>
