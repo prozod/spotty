@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { useEffect } from "react";
-import { Outlet, useLocation } from "react-router-dom";
+import { Outlet, useLocation, useParams } from "react-router-dom";
 import { shallow } from "zustand/shallow";
 import Card from "../../components/Card/card.component";
 import Header from "../../components/Header/header.component";
@@ -15,6 +15,8 @@ import { Track } from "../../types/spotify";
 
 function Home() {
   const location = useLocation();
+  const { tok } = useParams();
+  console.log("TOKEN Home Query:", tok);
   const [loggedIn, updateSavedTracks] = useUserStore(
     (state) => [state.loggedIn, state.updateSavedTracks],
     shallow
