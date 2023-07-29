@@ -1,4 +1,6 @@
+import { notifications } from "@mantine/notifications";
 import { useEffect, useState } from "react";
+import { BiErrorCircle } from "react-icons/bi";
 import { BsPauseFill, BsPlayFill } from "react-icons/bs";
 import { Link, useLocation } from "react-router-dom";
 import { shallow } from "zustand/shallow";
@@ -125,6 +127,19 @@ function PlaylistItem({
           data-id={song?.uri}
           data-track-index={total}
           onClick={() => {
+            {
+              currentUser?.product === "free" &&
+                notifications.show({
+                  withCloseButton: true,
+                  autoClose: 10000,
+                  title: "Spotify Free Plan",
+                  message:
+                    "Certain features, such as controlling the playback of your songs, are available for Spotify Premium users only.",
+                  color: "red",
+                  icon: <BiErrorCircle />,
+                  loading: false,
+                });
+            }
             console.warn(
               "Playing:",
               song?.name,

@@ -1,6 +1,7 @@
+import { notifications } from "@mantine/notifications";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { BiRepeat } from "react-icons/bi";
+import { BiErrorCircle, BiRepeat } from "react-icons/bi";
 import { FaPauseCircle, FaPlayCircle } from "react-icons/fa";
 import { IoShuffleOutline } from "react-icons/io5";
 import { MdSkipNext, MdSkipPrevious } from "react-icons/md";
@@ -10,12 +11,14 @@ import {
   toggleShuffle,
 } from "../../services/playback.service";
 import usePlaybackStore from "../../store/playback.store";
+import useUserStore from "../../store/user.store";
 import millisToMinutesAndSeconds from "../../utils/msConversion";
 
 function PlayerBar() {
   const queryClient = useQueryClient();
   const [sliderPos, setSliderPos] = useState(0);
   const [hovered, setHovered] = useState(false);
+  const [currentUser] = useUserStore((state) => [state.currentUser]);
   const [playback, webPlayback, player] = usePlaybackStore(
     (state) => [state.playback, state.webSDKplayback, state.player],
     shallow
@@ -52,6 +55,19 @@ function PlayerBar() {
           <FaPauseCircle
             size={28}
             onClick={() => {
+              {
+                currentUser?.product === "free" &&
+                  notifications.show({
+                    withCloseButton: true,
+                    autoClose: 10000,
+                    title: "Spotify Free Plan",
+                    message:
+                      "Certain features, such as controlling the playback of your songs, are available for Spotify Premium users only.",
+                    color: "red",
+                    icon: <BiErrorCircle />,
+                    loading: false,
+                  });
+              }
               player?.togglePlay();
               queryClient.invalidateQueries([
                 playbackService.playbackState.key,
@@ -63,6 +79,19 @@ function PlayerBar() {
           <FaPlayCircle
             size={28}
             onClick={() => {
+              {
+                currentUser?.product === "free" &&
+                  notifications.show({
+                    withCloseButton: true,
+                    autoClose: 10000,
+                    title: "Spotify Free Plan",
+                    message:
+                      "Certain features, such as controlling the playback of your songs, are available for Spotify Premium users only.",
+                    color: "red",
+                    icon: <BiErrorCircle />,
+                    loading: false,
+                  });
+              }
               player?.togglePlay();
               queryClient.invalidateQueries([
                 playbackService.playbackState.key,

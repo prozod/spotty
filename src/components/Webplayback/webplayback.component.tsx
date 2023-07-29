@@ -5,10 +5,12 @@ import { playbackService } from "../../services/playback.service";
 import usePlaybackStore from "../../store/playback.store";
 import { WebPlaybackStateObject } from "../../types/spotify";
 import useUnauthorizedState from "../../utils/useUnauthorizedState";
+import useUserStore from "../../store/user.store";
 
 function WebPlayback() {
   useUnauthorizedState();
   const queryClient = useQueryClient();
+  const [currentUser] = useUserStore((state) => [state.currentUser]);
   const [
     updateWebSDKPlayback,
     updatePlayerSDK,

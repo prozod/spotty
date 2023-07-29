@@ -1,8 +1,9 @@
 import { Avatar, Menu } from "@mantine/core";
+import { notifications } from "@mantine/notifications";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { AiFillGithub } from "react-icons/ai";
-import { BiSolidMagicWand } from "react-icons/bi";
+import { BiErrorCircle, BiSolidMagicWand } from "react-icons/bi";
 import {
   BsArrowDownCircle,
   BsChevronLeft,
@@ -81,6 +82,25 @@ function Header() {
         </form>
       </div>
       <div className="flex gap-2 items-center">
+        {data?.product === "free" && (
+          <button
+            className="rounded-full bg-red-500 text-white  p-1 text-xs font-bold"
+            onClick={() =>
+              notifications.show({
+                withCloseButton: true,
+                autoClose: 10000,
+                title: "Spotify Free Plan",
+                message:
+                  "Certain features, such as controlling the playback of your songs, are available for Spotify Premium users only.",
+                color: "red",
+                icon: <BiErrorCircle />,
+                loading: false,
+              })
+            }
+          >
+            <BiErrorCircle size={22} />
+          </button>
+        )}
         <button
           aria-label="Spotify Tools"
           className="bg-black/50 rounded-full hidden xl:block"

@@ -1,4 +1,5 @@
 import { MantineProvider } from "@mantine/core";
+import { Notifications } from "@mantine/notifications";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import React from "react";
 import ReactDOM from "react-dom";
@@ -50,6 +51,7 @@ ReactDOM.render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
       <MantineProvider withNormalizeCSS>
+        <Notifications position="top-right" zIndex={2077} />
         <RouterProvider router={router} />
       </MantineProvider>
     </QueryClientProvider>

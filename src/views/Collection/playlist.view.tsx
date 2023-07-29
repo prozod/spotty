@@ -1,4 +1,5 @@
 import { useInfiniteQuery, useMutation, useQuery } from "@tanstack/react-query";
+import { notifications } from "@mantine/notifications";
 import { useEffect, useState } from "react";
 import { BsPauseFill, BsPlayFill } from "react-icons/bs";
 import { FiChevronDown, FiSearch } from "react-icons/fi";
@@ -14,6 +15,7 @@ import useUserStore from "../../store/user.store";
 import { PlaylistTrack } from "../../types/spotify";
 import getDominantColor from "../../utils/dominantColor";
 import useDetermineLiked from "../../utils/useDetermineLiked";
+import { BiErrorCircle } from "react-icons/bi";
 const numFormat = new Intl.NumberFormat("en-US");
 
 function Playlist() {
@@ -21,7 +23,7 @@ function Playlist() {
   const playlistId = location?.pathname?.split("/")[2] as string;
   const [bgColor, setBgColor] = useState<number[] | null>(null);
   const { ref, inView } = useInView();
-  const [loggedIn] = useUserStore(
+  const [loggedIn, currentUser] = useUserStore(
     (state) => [state.loggedIn, state.currentUser],
     shallow
   );
@@ -202,6 +204,19 @@ function Playlist() {
             <button
               className="bg-spotify rounded-full px-6 py-1 justify-center items-center flex  text-xs font-semibold  text-black z-10"
               onClick={() => {
+                {
+                  currentUser?.product === "free" &&
+                    notifications.show({
+                      withCloseButton: true,
+                      autoClose: 10000,
+                      title: "Spotify Free Plan",
+                      message:
+                        "Certain features, such as controlling the playback of your songs, are available for Spotify Premium users only.",
+                      color: "red",
+                      icon: <BiErrorCircle />,
+                      loading: false,
+                    });
+                }
                 if (
                   playback?.context?.uri.split(":")[2] !==
                   location.pathname.split("/")[2]
