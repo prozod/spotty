@@ -1,11 +1,12 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { shallow } from "zustand/shallow";
 import useUserStore from "../store/user.store";
 
 function useUnauthorizedState() {
   const location = useLocation();
+  const { tok } = useParams();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const token = document.cookie.split("access_token=")[1];
@@ -18,7 +19,7 @@ function useUnauthorizedState() {
     updateLoginState(token ? true : false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token]);
-  console.log("TOKEN useUnauthorizedState:", token);
+  console.log("TOKEN useUnauthorizedState Query:", tok);
 
   useEffect(() => {
     if (!token && location.pathname !== "/login") {
