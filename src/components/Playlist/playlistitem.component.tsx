@@ -2,7 +2,7 @@ import { notifications } from "@mantine/notifications";
 import { useEffect, useState } from "react";
 import { BiErrorCircle } from "react-icons/bi";
 import { BsPauseFill, BsPlayFill } from "react-icons/bs";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { shallow } from "zustand/shallow";
 import { playbackService } from "../../services/playback.service";
 import usePlaybackStore from "../../store/playback.store";
@@ -42,6 +42,7 @@ function PlaylistItem({
   loading?: boolean;
 }) {
   const location = useLocation();
+  const navigate = useNavigate();
   const [currentContext, setCurrentContext] = useState<string | null>(null);
   const [currentSongPlaying, setCurrentSongPlaying] = useState<boolean>(false);
   const [playback] = usePlaybackStore((state) => [state.playback], shallow);
@@ -172,21 +173,19 @@ function PlaylistItem({
             >
               {song?.name}
             </p>
-            <div>
-              {song &&
-                "artists" in song &&
-                song?.artists.map((artist, i) => (
-                  <Link
-                    to={`/artist/${artist?.id}`}
-                    className="hover:underline cursor-pointer hover:text-white text-gray-400"
-                    key={artist?.id}
-                  >
-                    {song?.artists.length === i + 1
-                      ? artist.name
-                      : artist.name.concat(", ")}
-                  </Link>
-                ))}
-            </div>
+            {song &&
+              "artists" in song &&
+              song?.artists.map((artist, i) => (
+                <Link
+                  to={`/artist/${artist?.id}`}
+                  className="hover:underline cursor-pointer hover:text-white text-gray-400"
+                  key={artist?.id}
+                >
+                  {song?.artists.length === i + 1
+                    ? artist.name
+                    : artist.name.concat(", ")}
+                </Link>
+              ))}
           </div>
         </div>
         <p className="col-start-3 opacity-60 hover:underline hover:opacity-90 cursor-pointer line-clamp-2 hidden lg:block">

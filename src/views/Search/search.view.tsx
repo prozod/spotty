@@ -1,11 +1,12 @@
+import { Loader } from "@mantine/core";
 import { useQuery } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import Card from "../../components/Card/card.component";
+import Tile from "../../components/Tile/tile.component";
 import { userService } from "../../services/user.service";
 import useUserStore from "../../store/user.store";
 import { Album, Artist, SimplifiedPlaylist, Track } from "../../types/spotify";
-import Tile from "../../components/Tile/tile.component";
-import { useEffect, useState } from "react";
-import Card from "../../components/Card/card.component";
-import { Loader } from "@mantine/core";
 
 export default function Search() {
   const [query, setQuery] = useState("");
@@ -72,14 +73,16 @@ export default function Search() {
             <div className="flex flex-wrap gap-2">
               {(results?.artists?.items as Artist[])?.map((artist) => {
                 return (
-                  <Tile
-                    key={artist.id}
-                    title={`Followers: ${new Intl.NumberFormat("en-US").format(
-                      artist?.followers?.total
-                    )}`}
-                    subtitle={artist.name}
-                    image={artist?.images[0]?.url}
-                  />
+                  <Link to={`/artist/${artist.id}`}>
+                    <Tile
+                      key={artist.id}
+                      title={`Followers: ${new Intl.NumberFormat(
+                        "en-US"
+                      ).format(artist?.followers?.total)}`}
+                      subtitle={artist.name}
+                      image={artist?.images[0]?.url}
+                    />
+                  </Link>
                 );
               })}
             </div>

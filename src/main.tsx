@@ -7,6 +7,7 @@ import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import ErrorPage from "./error-page";
 import "./index.css";
 import Albums from "./views/Albums/albums.view";
+import Artist from "./views/Artist/artist.view";
 import CollectionLiked from "./views/Collection/liked.view";
 import Playlist from "./views/Collection/playlist.view";
 import Featured from "./views/Featured/featured.view";
@@ -60,6 +61,11 @@ const router = createBrowserRouter([
       {
         path: "/episodes",
         element: <Shows />,
+        errorElement: <ErrorPage />,
+      },
+      {
+        path: "/artist/:id",
+        element: <Artist />,
         errorElement: <ErrorPage />,
       },
     ],

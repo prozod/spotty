@@ -46,24 +46,22 @@ function PlayerTile() {
               </span>
             )}
           </p>
-
-          <p className="line-clamp-1">
+          <div>
             {playback &&
               playback?.currently_playing_type === "track" &&
               "artists" in playback.item &&
               playback?.item?.artists.map((artist, i) => (
                 <Link
                   to={`/artist/${artist?.id}`}
-                  className="hover:underline cursor-pointer hover:text-white text-gray-400"
+                  className="hover:underline cursor-pointer hover:text-white text-gray-400 truncate"
                   key={artist?.id}
                 >
                   {"artists" in playback.item &&
-                  playback?.item?.artists.length === i + 1
+                  i == playback?.item?.artists.length - 1
                     ? artist.name
                     : artist.name.concat(", ")}
                 </Link>
               ))}
-
             {playback && playback?.currently_playing_type === "episode" && (
               <Link
                 to={`/show/${playback?.item?.id}`}
@@ -73,7 +71,7 @@ function PlayerTile() {
                 {"show" in playback.item && playback?.item?.show?.name}
               </Link>
             )}
-          </p>
+          </div>
         </div>
         {playback && playback?.is_playing && (
           <Liked id={playback?.item?.id as string} />

@@ -12,9 +12,9 @@ export default function Card({ title, subtitle, image, type, id }: ICardProps) {
   return (
     <Link
       to={(type === "playlist" && `/playlist/${id}`) || "#"}
-      className="p-4 relative w-[190px] truncate rounded-md cursor-pointer hover:bg-grack-700 bg-grack-800 w-fit group"
+      className="p-4 w-[190px] rounded-md cursor-pointer hover:bg-grack-700 bg-grack-800 relative group"
     >
-      <div className="relative mx-auto">
+      <div className="relative">
         <img
           src={image}
           alt={subtitle}
@@ -26,9 +26,9 @@ export default function Card({ title, subtitle, image, type, id }: ICardProps) {
           <GrPlayFill />
         </div>
       </div>
-      <div className="mt-4 mb-2 overflow-hidden relative">
-        <h1 className="truncate text-sm line-clamp-1">{subtitle}</h1>
-        <p className="text-sm text-gray-400 truncate line-clamp-1">{title}</p>
+      <div className="mt-4 mb-2 overflow-hidden truncate">
+        <h1 className="text-sm truncate">{subtitle}</h1>
+        <p className="text-sm text-gray-400 truncate">{title}</p>
       </div>
     </Link>
   );

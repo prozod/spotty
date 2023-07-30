@@ -1,8 +1,8 @@
+import { useQueryClient } from "@tanstack/react-query";
 import { GrPauseFill, GrPlayFill } from "react-icons/gr";
+import { shallow } from "zustand/shallow";
 import { playbackService } from "../../services/playback.service";
 import usePlaybackStore from "../../store/playback.store";
-import { shallow } from "zustand/shallow";
-import { useQueryClient } from "@tanstack/react-query";
 
 interface ICardProps {
   title: string;
