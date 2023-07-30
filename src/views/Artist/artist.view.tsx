@@ -7,7 +7,6 @@ import useUserStore from "../../store/user.store";
 import { Album, Track } from "../../types/spotify";
 import Tile from "../../components/Tile/tile.component";
 import Card from "../../components/Card/card.component";
-import { useEffect } from "react";
 
 function Artist() {
   const artistId = location?.pathname?.split("/")[2] as string;
