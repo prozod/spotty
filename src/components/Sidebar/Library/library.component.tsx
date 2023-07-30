@@ -1,3 +1,4 @@
+import { Loader } from "@mantine/core";
 import { useQuery } from "@tanstack/react-query";
 import { AiOutlinePlus } from "react-icons/ai";
 import { PiPlaylistFill } from "react-icons/pi";
@@ -6,7 +7,6 @@ import { shallow } from "zustand/shallow";
 import { playlistService } from "../../../services/playlist.service";
 import usePlaybackStore from "../../../store/playback.store";
 import useUserStore from "../../../store/user.store";
-import { Loader } from "@mantine/core";
 
 export default function Library() {
   const location = useLocation();
@@ -40,7 +40,6 @@ export default function Library() {
         )}
         {isLoading && (
           <div className="w-full flex items-center justify-center my-8 flex-col gap-2">
-            Fetching playlists...
             <Loader color="#1ed760" variant="bars" />
           </div>
         )}
@@ -55,7 +54,7 @@ export default function Library() {
             <div>
               <PiPlaylistFill
                 size={22}
-                className={`flex-1${
+                className={`flex-1 ${
                   playlist.id === playback?.context?.uri.split(":")[2] &&
                   "text-spotify animate-pulse"
                 } aspect-square`}

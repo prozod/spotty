@@ -15,8 +15,9 @@ function useUnauthorizedState() {
     (state) => [state.updateAccessToken, state.updateLoginState],
     shallow
   );
+  const expiry = new Date(Date.now() + 3590 * 1000).toUTCString();
   if (query_token) {
-    document.cookie = `access_token=${query_token};max-age=6240`;
+    document.cookie = `access_token=${query_token};expires=${expiry};Secure`;
   }
   useEffect(() => {
     updateAccessToken(stored_token as string);

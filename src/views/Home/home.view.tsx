@@ -1,9 +1,6 @@
-import { Group, Button } from "@mantine/core";
-import { notifications } from "@mantine/notifications";
 import { useQuery } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import { useEffect } from "react";
-import { Outlet, useLocation, useParams } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import { shallow } from "zustand/shallow";
 import Card from "../../components/Card/card.component";
 import Header from "../../components/Header/header.component";
@@ -13,34 +10,24 @@ import WebPlayback from "../../components/Webplayback/webplayback.component";
 import { trackService } from "../../services/track.service";
 import usePlaybackStore from "../../store/playback.store";
 import useUserStore from "../../store/user.store";
-import { Track } from "../../types/spotify";
+import { Album } from "../../types/spotify";
 
 function Home() {
   const location = useLocation();
-  const { tok } = useParams();
-  console.log("TOKEN Home Query:", tok);
-  const [loggedIn, updateSavedTracks] = useUserStore(
-    (state) => [state.loggedIn, state.updateSavedTracks],
-    shallow
-  );
+  const [loggedIn] = useUserStore((state) => [state.loggedIn], shallow);
 
   const [device_id, devices, playback] = usePlaybackStore(
     (state) => [state.device_id, state.devices, state.playback],
     shallow
   );
 
-  const { data } = useQuery(
-    [trackService.userTopTracks.key],
-    trackService.userTopTracks.fn,
+  const { data: releases } = useQuery(
+    [trackService.newReleases.key],
+    async () => trackService.newReleases.fn(),
     {
       enabled: loggedIn,
     }
   );
-
-  useEffect(() => {
-    updateSavedTracks(data?.items);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data, loggedIn]);
 
   return (
     <>
@@ -59,18 +46,18 @@ function Home() {
         >
           <Header />
           {location.pathname === "/" && (
-            <section className="flex flex-col m-4 ">
-              <h1 className="mb-4 text-xl font-bold text-gray-300">
-                Recently played
-              </h1>
-              <div className="grid self-start grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 2xl:grid-cols-7">
-                {(data?.items as Track[])?.map((item) => {
+            <section className="flex flex-col m-6">
+              <h1 className="mb-4 font-bold">See what's new</h1>
+              <div className="flex flex-wrap gap-2">
+                {releases?.albums?.items?.map((item: Album) => {
                   return (
                     <Card
                       key={item.id}
-                      title={item.artists[0].name}
-                      subtitle={item.name}
-                      image={item?.album?.images[1]?.url}
+                      title={item.name}
+                      subtitle={item?.artists
+                        ?.map((artist) => artist?.name)
+                        .join(", ")}
+                      image={item?.images[0]?.url}
                     />
                   );
                 })}

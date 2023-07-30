@@ -55,6 +55,20 @@ export async function getPlaylistTracks(
   }
   return response.json();
 }
+export async function getFeaturedPlaylists() {
+  const response = await fetch(
+    `https://api.spotify.com/v1/browse/featured-playlists?limit=30`,
+    {
+      headers: {
+        Authorization: `Bearer ${document.cookie.split("access_token=")[1]}`,
+      },
+    }
+  );
+  if (!response.ok) {
+    throw new Error("Network response to/from Spotty Backend was not ok");
+  }
+  return response.json();
+}
 
 export async function getPlaylist({ id }: { id: string }) {
   const response = await fetch(`https://api.spotify.com/v1/playlists/${id}`, {
@@ -80,5 +94,9 @@ export const playlistService = {
   getPlaylist: {
     key: "playlist-",
     fn: getPlaylist,
+  },
+  getFeatured: {
+    key: "playlist-featured",
+    fn: getFeaturedPlaylists,
   },
 };

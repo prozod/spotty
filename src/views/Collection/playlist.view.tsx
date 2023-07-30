@@ -1,6 +1,7 @@
-import { useInfiniteQuery, useMutation, useQuery } from "@tanstack/react-query";
 import { notifications } from "@mantine/notifications";
+import { useInfiniteQuery, useMutation, useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
+import { BiErrorCircle } from "react-icons/bi";
 import { BsPauseFill, BsPlayFill } from "react-icons/bs";
 import { FiChevronDown, FiSearch } from "react-icons/fi";
 import { useInView } from "react-intersection-observer";
@@ -15,7 +16,6 @@ import useUserStore from "../../store/user.store";
 import { PlaylistTrack } from "../../types/spotify";
 import getDominantColor from "../../utils/dominantColor";
 import useDetermineLiked from "../../utils/useDetermineLiked";
-import { BiErrorCircle } from "react-icons/bi";
 const numFormat = new Intl.NumberFormat("en-US");
 
 function Playlist() {

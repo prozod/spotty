@@ -20,7 +20,6 @@ function useDetermineLiked({
   );
   const chunkSize = 50;
   const ch: string[][] = [];
-  tracks && console.log(tracks);
 
   useEffect(() => {
     tracks?.pages.map((page) => {

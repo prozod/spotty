@@ -140,16 +140,6 @@ function PlaylistItem({
                   loading: false,
                 });
             }
-            console.warn(
-              "Playing:",
-              song?.name,
-              "ID:",
-              song?.id,
-              "Offset:",
-              Number(total) - 1,
-              "Playlist:",
-              currentContext
-            );
             if (location.pathname !== "/queue") {
               playbackService.play.contextFn({
                 device_id: device_id,

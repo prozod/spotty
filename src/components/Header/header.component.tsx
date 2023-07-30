@@ -1,7 +1,7 @@
 import { Avatar, Menu } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { useQuery } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { AiFillGithub } from "react-icons/ai";
 import { BiErrorCircle, BiSolidMagicWand } from "react-icons/bi";
 import {
@@ -18,6 +18,7 @@ import useUnauthorizedState from "../../utils/useUnauthorizedState";
 
 function Header() {
   useUnauthorizedState();
+  const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
   const [loggedIn, updateCurrentUser] = useUserStore(
     (state) => [state.loggedIn, state.updateCurrentUser],
@@ -50,7 +51,13 @@ function Header() {
           onClick={() => navigate(1)}
         />
 
-        <form>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            setSearchQuery("");
+            useUserStore.setState({ searchResults: "" });
+          }}
+        >
           <div className="relative">
             <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
               <svg
@@ -76,6 +83,14 @@ function Header() {
                 className="flex items-center w-full px-4 py-3 pl-10 text-xs font-medium border border-grack-700 rounded-full bg-black/80 focus:ring-spotify focus:border-spotify placeholder-gray-500 text-white outline-none focus:outline-spotify/30"
                 placeholder="Search"
                 required
+                value={searchQuery}
+                onChange={(e) => {
+                  e.preventDefault();
+                  setSearchQuery(e.currentTarget.value);
+                  useUserStore.setState({
+                    searchResults: e.currentTarget.value,
+                  });
+                }}
               />
             </Link>
           </div>
@@ -104,9 +119,17 @@ function Header() {
         <button
           aria-label="Spotify Tools"
           className="bg-black/50 rounded-full hidden xl:block"
-          onClick={() => {
-            alert("Coming soon!");
-          }}
+          onClick={() =>
+            notifications.show({
+              withCloseButton: true,
+              autoClose: 1500,
+              title: "Coming soon",
+              message: "Not available yet.",
+              color: "blue",
+              icon: <BiErrorCircle />,
+              loading: false,
+            })
+          }
         >
           <Link
             to="#" // --> /tools
