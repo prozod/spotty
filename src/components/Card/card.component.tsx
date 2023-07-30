@@ -26,7 +26,7 @@ export default function Card({ title, subtitle, image, type, id }: ICardProps) {
           <GrPlayFill />
         </div>
       </div>
-      <div className="flex-1 mt-4 mb-2 overflow-hidden relative">
+      <div className="mt-4 mb-2 overflow-hidden relative">
         <h1 className="truncate text-sm line-clamp-1">{subtitle}</h1>
         <p className="text-sm text-gray-400 truncate line-clamp-1">{title}</p>
       </div>
